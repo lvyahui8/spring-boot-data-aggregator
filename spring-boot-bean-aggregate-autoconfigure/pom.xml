@@ -31,6 +31,16 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.feego.spring</groupId>
+            <artifactId>spring-boot-bean-aggregate-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
