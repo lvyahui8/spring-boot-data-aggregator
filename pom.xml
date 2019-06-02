@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.feego.spring</groupId>
-    <artifactId>spring-boot-bean-aggregate</artifactId>
+    <artifactId>spring-boot-data-aggregate</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <modules>
-        <module>spring-boot-bean-aggregate-core</module>
-        <module>spring-boot-bean-aggregate-autoconfigure</module>
-        <module>spring-boot-bean-aggregate-example</module>
+        <module>spring-boot-data-aggregate-core</module>
+        <module>spring-boot-data-aggregate-autoconfigure</module>
+        <module>spring-boot-data-aggregate-example</module>
     </modules>
     <packaging>pom</packaging>
 
-    <name>spring-boot-bean-aggregate</name>
+    <name>spring-boot-data-aggregate</name>
 
 
     <properties>
@@ -47,19 +47,19 @@
 
             <dependency>
                 <groupId>org.feego.spring</groupId>
-                <artifactId>spring-boot-bean-aggregate-autoconfigure</artifactId>
+                <artifactId>spring-boot-data-aggregate-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.feego.spring</groupId>
-                <artifactId>spring-boot-bean-aggregate-core</artifactId>
+                <artifactId>spring-boot-data-aggregate-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.feego.spring</groupId>
-                <artifactId>spring-boot-bean-aggregate-example</artifactId>
+                <artifactId>spring-boot-data-aggregate-example</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

@@ -3,15 +3,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>spring-boot-bean-aggregate</artifactId>
+        <artifactId>spring-boot-data-aggregate</artifactId>
         <groupId>org.feego.spring</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-boot-bean-aggregate-example</artifactId>
+    <artifactId>spring-boot-data-aggregate-example</artifactId>
 
-    <name>spring-boot-bean-aggregate-example</name>
+    <name>spring-boot-data-aggregate-example</name>
 
     <properties>
 
@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.feego.spring</groupId>
-            <artifactId>spring-boot-bean-aggregate-autoconfigure</artifactId>
+            <artifactId>spring-boot-data-aggregate-autoconfigure</artifactId>
         </dependency>
     </dependencies>
 
