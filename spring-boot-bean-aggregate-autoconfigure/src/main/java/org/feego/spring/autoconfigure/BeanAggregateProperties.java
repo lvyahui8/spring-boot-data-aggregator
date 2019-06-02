@@ -10,5 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "org.feego.spring")
 @Data
 public class BeanAggregateProperties {
-    String baseBackpages;
+    String basePackpages;
 }
