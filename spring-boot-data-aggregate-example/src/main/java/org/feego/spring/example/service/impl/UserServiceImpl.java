@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataBeanProvider(id = "user",namespace = "feego.example")
+    @DataBeanProvider(id = "user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         /* */

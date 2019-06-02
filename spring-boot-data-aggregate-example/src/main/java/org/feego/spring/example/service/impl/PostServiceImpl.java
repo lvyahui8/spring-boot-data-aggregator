@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl implements PostService {
-    @DataBeanProvider(id = "posts",namespace = "feego.example")
+    @DataBeanProvider(id = "posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         Post post = new Post();

@@ -17,10 +17,10 @@ import java.util.List;
 public class UserAggregate {
     private UserService userService;
 
-    @DataBeanProvider(id="userWithPosts",namespace = "feego.example")
+    @DataBeanProvider(id="userWithPosts")
     public User userWithPosts(
-            @DataBeanConsumer(id = "user",namespace = "feego.example") User user,
-            @DataBeanConsumer(id = "posts",namespace = "feego.example") List<Post> posts) {
+            @DataBeanConsumer(id = "user") User user,
+            @DataBeanConsumer(id = "posts") List<Post> posts) {
         user.setPosts(posts);
         return user;
     }

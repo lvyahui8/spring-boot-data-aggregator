@@ -10,5 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "org.feego.spring")
 @Data
 public class BeanAggregateProperties {
-    String basePackpages;
+    private String [] basePackpages;
+    private int threadNumber = Runtime.getRuntime().availableProcessors() * 3 ;
+    private int queueSize = 1000;
 }

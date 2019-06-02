@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
+import java.util.Collections;
+
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/6/1 0:13
@@ -17,7 +19,7 @@ public class ExampleApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
         DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-        User user = queryFacade.get("login.user", User.class);
+        User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1), User.class);
         Assert.notNull(user,"user not null");
         Assert.notNull(user.getPosts(),"user posts not null");
     }
