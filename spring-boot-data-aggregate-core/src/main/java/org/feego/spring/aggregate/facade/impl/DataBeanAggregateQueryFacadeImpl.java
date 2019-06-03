@@ -4,6 +4,7 @@ import org.feego.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import org.feego.spring.aggregate.service.DataBeanAgregateQueryService;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
     }
 
     @Override
-    public <T> T get(String id, Map<String,Object> invokeParams, Class<T> clazz) {
+    public <T> T get(String id, Map<String,Object> invokeParams, Class<T> clazz) throws InterruptedException, IllegalAccessException, InvocationTargetException {
         Assert.notNull(id,"id must be not null!");
         Assert.notNull(clazz,"clazz must be not null !");
         if(invokeParams == null) {

@@ -16,4 +16,5 @@ public class DataProvider {
     private Long timeout;
     private List<DataDepend> depends;
     private List<InvokeParam> params;
+    private List<MethodArg> methodArgs;
 }

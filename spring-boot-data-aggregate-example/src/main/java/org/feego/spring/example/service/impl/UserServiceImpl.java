@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     public User get(@InvokeParameter("userId") Long id) {
         /* */
         try {
-            Thread.sleep(100L);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
             //
         }

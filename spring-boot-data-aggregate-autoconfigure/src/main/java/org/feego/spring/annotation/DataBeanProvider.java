@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface DataBeanProvider {
     String id();
-    long timeout() default 1000;
+    long timeout() default 10000;
 }

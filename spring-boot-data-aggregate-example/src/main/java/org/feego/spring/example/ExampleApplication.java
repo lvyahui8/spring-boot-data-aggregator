@@ -16,11 +16,12 @@ import java.util.Collections;
 
 @SpringBootApplication
 public class ExampleApplication {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
         DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-        User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1), User.class);
+        User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
         Assert.notNull(user,"user not null");
         Assert.notNull(user.getPosts(),"user posts not null");
+        System.out.println(user);
     }
 }
