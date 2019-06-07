@@ -7,6 +7,6 @@ import lombok.Data;
  * @since 2019/6/2 22:14
  */
 @Data
-public class InvokeParam {
+public class InvokeParameterDefination {
     private String key;
 }

@@ -1,6 +1,6 @@
 package org.feego.spring.example.service.impl;
 
-import org.feego.spring.annotation.DataBeanProvider;
+import org.feego.spring.annotation.DataProvider;
 import org.feego.spring.annotation.InvokeParameter;
 import org.feego.spring.example.model.User;
 import org.feego.spring.example.service.UserService;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataBeanProvider(id = "user")
+    @DataProvider(id = "user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         /* */

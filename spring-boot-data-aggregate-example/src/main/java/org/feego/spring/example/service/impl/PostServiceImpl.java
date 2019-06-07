@@ -1,6 +1,6 @@
 package org.feego.spring.example.service.impl;
 
-import org.feego.spring.annotation.DataBeanProvider;
+import org.feego.spring.annotation.DataProvider;
 import org.feego.spring.annotation.InvokeParameter;
 import org.feego.spring.example.model.Post;
 import org.feego.spring.example.service.PostService;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl implements PostService {
-    @DataBeanProvider(id = "posts")
+    @DataProvider(id = "posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         try {

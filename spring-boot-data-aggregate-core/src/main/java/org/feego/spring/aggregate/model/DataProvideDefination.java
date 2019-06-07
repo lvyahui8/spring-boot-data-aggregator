@@ -10,11 +10,11 @@ import java.util.List;
  * @since 2019/6/2 21:30
  */
 @Data
-public class DataProvider {
+public class DataProvideDefination {
     private String id;
     private Method method;
     private Long timeout;
-    private List<DataDepend> depends;
-    private List<InvokeParam> params;
+    private List<DataConsumeDefination> depends;
+    private List<InvokeParameterDefination> params;
     private List<MethodArg> methodArgs;
 }

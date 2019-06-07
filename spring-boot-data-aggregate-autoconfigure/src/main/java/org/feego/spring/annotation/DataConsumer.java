@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DataBeanConsumer {
+public @interface DataConsumer {
     String id();
 }

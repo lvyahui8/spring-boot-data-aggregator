@@ -8,5 +8,15 @@ import java.util.Map;
  * @since 2019/6/2 21:49
  */
 public interface DataBeanAgregateQueryService {
-    <T> T get(String id, Map<String,Object> invokeParams, Class<T> clazz) throws InterruptedException, InvocationTargetException, IllegalAccessException;
+
+    /**
+     * 并发+递归获取并拼装数据
+     *
+     * @param id  data id
+     * @param invokeParams query parameters
+     * @param resultType  final result type
+     * @param <T> final result type
+     * @return final result
+     */
+    <T> T get(String id, Map<String,Object> invokeParams, Class<T> resultType) throws InterruptedException, InvocationTargetException, IllegalAccessException;
 }

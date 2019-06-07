@@ -1,6 +1,6 @@
 package org.feego.spring.aggregate.repository.impl;
 
-import org.feego.spring.aggregate.model.DataProvider;
+import org.feego.spring.aggregate.model.DataProvideDefination;
 import org.feego.spring.aggregate.repository.DataProviderRepository;
 import org.springframework.util.Assert;
 
@@ -12,16 +12,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataProviderRepositoryImpl implements DataProviderRepository {
 
-    private ConcurrentHashMap<String,DataProvider> providerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String,DataProvideDefination> providerMap = new ConcurrentHashMap<>();
 
     @Override
-    public void put(String id, DataProvider dataProvider) {
+    public void put(String id, DataProvideDefination dataProvideDefination) {
         Assert.isTrue(! providerMap.containsKey(id),"data provider exisit! id: " + id);
-        providerMap.put(id,dataProvider);
+        providerMap.put(id, dataProvideDefination);
     }
 
     @Override
-    public DataProvider get(String id) {
+    public DataProvideDefination get(String id) {
         return providerMap.get(id);
     }
 

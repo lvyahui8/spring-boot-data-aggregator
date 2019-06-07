@@ -6,9 +6,9 @@ import org.feego.spring.aggregate.facade.impl.DataBeanAggregateQueryFacadeImpl;
 import org.feego.spring.aggregate.model.*;
 import org.feego.spring.aggregate.repository.DataProviderRepository;
 import org.feego.spring.aggregate.repository.impl.DataProviderRepositoryImpl;
-import org.feego.spring.aggregate.service.DataBeanAgregateQueryServiceImpl;
-import org.feego.spring.annotation.DataBeanConsumer;
-import org.feego.spring.annotation.DataBeanProvider;
+import org.feego.spring.aggregate.service.impl.DataBeanAgregateQueryServiceImpl;
+import org.feego.spring.annotation.DataConsumer;
+import org.feego.spring.annotation.DataProvider;
 import org.feego.spring.annotation.InvokeParameter;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -77,45 +77,53 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         if(properties.getBasePackpages() != null) {
             for (String basePackage : properties.getBasePackpages()) {
                 Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
-                Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataBeanProvider.class);
+                Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
                 for (Method method : providerMethods) {
-                    DataProvider provider = new DataProvider();
-                    DataBeanProvider beanProvider = method.getAnnotation(DataBeanProvider.class);
-                    provider.setId(beanProvider.id());
-                    provider.setMethod(method);
-                    provider.setTimeout(beanProvider.timeout());
-                    Parameter[] parameters = provider.getMethod().getParameters();
-                    List<MethodArg> methodArgs = new ArrayList<>(method.getParameterCount());
-                    provider.setDepends(new ArrayList<>(method.getParameterCount()));
-                    provider.setParams(new ArrayList<>(method.getParameterCount()));
-                    for (Parameter parameter : parameters) {
-                        MethodArg methodArg = new MethodArg();
-                        DataBeanConsumer bean = parameter.getAnnotation(DataBeanConsumer.class);
-                        InvokeParameter invokeParameter = parameter.getAnnotation(InvokeParameter.class);
-                        if(bean != null) {
-                            methodArg.setAnnotionKey(bean.id());
-                            methodArg.setDenpendType(DenpendType.OTHER_MODEL);
-                            DataDepend dataDepend = new DataDepend();
-                            dataDepend.setClazz(parameter.getType());
-                            dataDepend.setId(bean.id());
-                            provider.getDepends().add(dataDepend);
-                        } else if (invokeParameter != null){
-                            methodArg.setAnnotionKey(invokeParameter.value());
-                            methodArg.setDenpendType(DenpendType.INVOKE_PARAM);
-                            InvokeParam param = new InvokeParam();
-                            param.setKey(param.getKey());
-                            provider.getParams().add(param);
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "paramter must ananotion by InvokeParameter or DataBeanConsumer");
-                        }
-                        methodArg.setParameter(parameter);
-                        methodArgs.add(methodArg);
-                    }
-                    provider.setMethodArgs(methodArgs);
-                    repository.put(beanProvider.id(),provider);
+                    dealProvideMethod(repository, method);
                 }
             }
         }
+    }
+
+    private void dealProvideMethod(DataProviderRepository repository, Method method) {
+        DataProvideDefination provider = new DataProvideDefination();
+        DataProvider beanProvider = method.getAnnotation(DataProvider.class);
+        provider.setId(beanProvider.id());
+        provider.setMethod(method);
+        provider.setTimeout(beanProvider.timeout());
+        Parameter[] parameters = provider.getMethod().getParameters();
+        List<MethodArg> methodArgs = new ArrayList<>(method.getParameterCount());
+        provider.setDepends(new ArrayList<>(method.getParameterCount()));
+        provider.setParams(new ArrayList<>(method.getParameterCount()));
+        for (Parameter parameter : parameters) {
+            dealMethodParamter(provider, methodArgs, parameter);
+        }
+        provider.setMethodArgs(methodArgs);
+        repository.put(beanProvider.id(),provider);
+    }
+
+    private void dealMethodParamter(DataProvideDefination provideDefination, List<MethodArg> methodArgs, Parameter parameter) {
+        MethodArg methodArg = new MethodArg();
+        DataConsumer bean = parameter.getAnnotation(DataConsumer.class);
+        InvokeParameter invokeParameter = parameter.getAnnotation(InvokeParameter.class);
+        if(bean != null) {
+            methodArg.setAnnotionKey(bean.id());
+            methodArg.setDenpendType(DenpendType.OTHER_MODEL);
+            DataConsumeDefination dataConsumeDefination = new DataConsumeDefination();
+            dataConsumeDefination.setClazz(parameter.getType());
+            dataConsumeDefination.setId(bean.id());
+            provideDefination.getDepends().add(dataConsumeDefination);
+        } else if (invokeParameter != null){
+            methodArg.setAnnotionKey(invokeParameter.value());
+            methodArg.setDenpendType(DenpendType.INVOKE_PARAM);
+            InvokeParameterDefination parameterDefination = new InvokeParameterDefination();
+            parameterDefination.setKey(invokeParameter.value());
+            provideDefination.getParams().add(parameterDefination);
+        } else {
+            throw new IllegalArgumentException(
+                    "paramter must ananotion by InvokeParameter or DataConsumer");
+        }
+        methodArg.setParameter(parameter);
+        methodArgs.add(methodArg);
     }
 }

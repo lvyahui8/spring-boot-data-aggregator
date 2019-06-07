@@ -7,7 +7,7 @@ import lombok.Data;
  * @since 2019/6/2 22:13
  */
 @Data
-public class DataDepend {
+public class DataConsumeDefination {
     private String id;
     private Class<?> clazz;
 }
