@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.feego.spring</groupId>
-            <artifactId>spring-boot-data-aggregator-autoconfigure</artifactId>
+            <artifactId>spring-boot-data-aggregator-starter</artifactId>
         </dependency>
     </dependencies>
 
