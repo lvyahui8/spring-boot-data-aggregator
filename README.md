@@ -122,8 +122,8 @@ As you can see, `user` interface  and `posts` interface are executed by the asyn
 ```
 [aggregateTask-1] query id: user, costTime: 1000ms, resultType: User, invokeMethod: UserServiceImpl#get
 [aggregateTask-2] query id: posts, costTime: 1000ms, resultType: List, invokeMethod: PostServiceImpl#getPosts
-[ main ] query id: userWithPosts, costTime: 1010ms, resultType: User, invokeMethod: UserAggregate#userWithPosts
-[ main] user.name:lvyahui8,user.posts.size:1
+[           main] query id: userWithPosts, costTime: 1010ms, resultType: User, invokeMethod: UserAggregate#userWithPosts
+[           main] user.name:lvyahui8,user.posts.size:1
 ```
 
 ## Contributors
