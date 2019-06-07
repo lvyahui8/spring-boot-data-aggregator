@@ -1,131 +1,133 @@
-# Spring Boot Data Bean 并发聚合支持
+# Spring Boot Data Bean Parallel Aggregation Support
 
-## 背景
+## Background and purpose
 
-**后台接口在调用一些接口时, 为了写代码方便, 多数时候我们习惯串行调用, 即使这些接口调用并无依赖性.**
+When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.
 
-**此框架目的旨在保持开发的简便性, 并同时很方便地支持并发和数据复用**
+**This framework is designed to support parallel and data reuse while maintaining the development efficiency.**
 
-## 原理
+Of course, in an extremely high concurrent scenario, the parallel call interface is not that helpful for performance improvement.   However, it doesn't mean that this project is meaningless  because most applications in the Internet don't have very high concurrent traffic.
 
-1. CountDownLatch + Future
-2. 目标参数依赖中, 需要查询接口获取的数据, 封装为一个任务交给线程池处理, 处理完成之后, 再统一目标方法
+## Principle
 
-## 使用方法
+1. CountDownLatch + Future + Recursion
+2. In order to get the target data, it will recursively analyze and obtain the dependencies required by the data.  **There are two kinds of dependencies; one is other interface return value, the other is  input parameter.  The former needs to call other interfaces, this call will be packed as a task which is an asynchronous execution to get the result.**
 
-- DataBeanProvider 定义数据model提供者
-- DataBeanConsumer 定义方法将要消费的model
-- InvokeParameter 指定用户手动传入的参数
-- DataBeanAggregateQueryFacade 查询指定的model
+## Instruction
 
-## 示例
+- `@DataProvider`:  define the data provider
+- `@DataConsumer`: define the method parameter dependency type as return the value of other interfaces, the other interface is a @DataProvider
+- `@InvokeParameter`: define the method parameter dependency type as the user input value
+- Spring Bean `dataBeanAggregateQueryFacade`:  query data facade API
 
-开发一个用户汇总数据接口, 包括用户的用户基础信息和博客列表
+##Example
 
-**1. 定义提供基础数据的"原子"服务**
+Developing a user summary data interface that includes the user's basic information and blog list.
 
-使用DataBeanProvider定义要提供的数据, 使用InvokeParameter指定查询时要传递的参数
+### 1. Define an "atomic" service to provide user data
 
-博客列表服务, 需要参数userId
+Use `@DataProvider` to define the interface a data provider.
 
-```java
-@Service
-public class PostServiceImpl implements PostService {
-    @DataBeanProvider(id = "posts")
-    @Override
-    public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
-        try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException e) {
-            //
-        }
-        Post post = new Post();
-        post.setTitle("spring data aggregate example");
-        post.setContent("No active profile set, falling back to default profiles");
-        return Collections.singletonList(post);
-    }
-}
+Use `@InvokeParameter` to specify the input parameters to pass.
 
-```
+**Blog list service**
 
-用户基础信息查询服务, 需要参数userId
+require input parameter `userId`.
 
 ```java
 @Service
-public class UserServiceImpl implements UserService {
-
-    @DataBeanProvider(id = "user")
-    @Override
-    public User get(@InvokeParameter("userId") Long id) {
-        /* */
-        try {
-            Thread.sleep(100L);
-        } catch (InterruptedException e) {
-            //
-        }
-        /* mock a user*/
-        User user = new User();
-        user.setId(id);
-        user.setEmail("lvyahui8@gmail.com");
-        user.setUsername("lvyahui8");
-        return user;
-    }
+Public class PostServiceImpl implements PostService {
+    @DataProvider(id = "posts")
+    @Override
+    Public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
+        Try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+        }
+        Post post = new Post();
+        post.setTitle("spring data aggregate example");
+        post.setContent("No active profile set, falling back to default profiles");
+        Return Collections.singletonList(post);
+    }
 }
 ```
 
-**2. 定义并实现聚合层**
+**User basic information query service**
 
-组合DataBeanProvider\DataBeanConsumer\InvokeParameter实现汇聚功能
+require input parameter `userId`.
+
+```java
+@Service
+Public class UserServiceImpl implements UserService {
+
+    @DataProvider(id = "user")
+    @Override
+    Public User get(@InvokeParameter("userId") Long id) {
+        /* */
+        Try {
+            Thread.sleep(100L);
+        } catch (InterruptedException e) {
+        }
+        /* mock a user*/
+        User user = new User();
+        user.setId(id);
+        user.setEmail("lvyahui8@gmail.com");
+        user.setUsername("lvyahui8");
+        Return user;
+    }
+}
+```
+
+### 2. Define and implement an aggregation layer
+
+Combine `@DataProvider`  ( `@DataConsumer`  \ `@InvokeParameter` ) to achieve aggregation function
 
 ```java
 @Component
-public class UserAggregate {
-    @DataBeanProvider(id="userWithPosts")
-    public User userWithPosts(
-            @DataBeanConsumer(id = "user") User user,
-            @DataBeanConsumer(id = "posts") List<Post> posts) {
-        user.setPosts(posts);
-        return user;
-    }
+Public class UserAggregate {
+    @DataProvider(id="userWithPosts")
+    Public User userWithPosts(
+            @DataConsumer(id = "user") User user,
+            @DataConsumer(id = "posts") List<Post> posts) {
+        user.setPosts(posts);
+        Return user;
+    }
 }
 ```
 
-**3. 调用聚合层接口**
+### 3. Call the aggregation layer interface
 
-注解了DataBeanProvider方法的接口都不能直接调用, 而需要通过门面类DataBeanAggregateQueryFacade访问.
+Note that the interface of the `@DataProvider` method shouldn't to be called directly, but accessed through the facade class `DataBeanAggregateQueryFacade`.
 
-指定要查询的DataBeanProvider.id, 查询参数, 返回值类型即可
+Specify queried data id, invoke parameters, and return type to invoke `facade.get` method
 
 ```java
-@SpringBootApplication
-public class ExampleApplication {
-    public static void main(String[] args) throws Exception {
-        ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
-        DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-        User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
-        Assert.notNull(user,"user not null");
-        Assert.notNull(user.getPosts(),"user posts not null");
-        System.out.println(user);
-    }
-}
+DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
+User user = queryFacade.get(/*data id*/ "userWithPosts",
+                            /*Invoke Parameters*/
+                            Collections.singletonMap("userId",1L),
+                            User.class);
+Assert.notNull(user,"user not null");
+Assert.notNull(user.getPosts(),"user posts not null");
 ```
 
-**运行结果**
+**Invoke result**
 
-可以看到, user 和posts是由异步线程进行的查询, 而userWithPosts是主调线程
+As you can see, `user` interface  and `posts` interface are executed by the asynchronous thread while `userWithPosts` service is executed by the calling thread.
 
-其中 
-
-- 基础user信息查询时间 1000ms
-- 用户博客列表查询时间 1000ms
-- **总的查询时间 1005ms**
+- Basic user information query takes 1000ms
+- User blog list query takes 1000ms
+- **Total query takes 1005ms**
 
 ```
-2019-06-03 23:56:52.254  INFO 9088 --- [aggregateTask-2] f.s.a.s.DataBeanAgregateQueryServiceImpl : query id: posts, costTime: 1000ms, model: List, params: 1
-2019-06-03 23:56:52.254  INFO 9088 --- [aggregateTask-1] f.s.a.s.DataBeanAgregateQueryServiceImpl : query id: user, costTime: 1000ms, model: User, params: 1
-2019-06-03 23:56:52.255  INFO 9088 --- [           main] f.s.a.s.DataBeanAgregateQueryServiceImpl : query id: userWithPosts, costTime: 1005ms, model: User, params: User...........
+[aggregateTask-1] query id: user, costTime: 1000ms, resultType: User, invokeMethod: UserServiceImpl#get
+[aggregateTask-2] query id: posts, costTime: 1000ms, resultType: List, invokeMethod: PostServiceImpl#getPosts
+[ main ] query id: userWithPosts, costTime: 1010ms, resultType: User, invokeMethod: UserAggregate#userWithPosts
+[ main] user.name:lvyahui8,user.posts.size:1
 ```
 
-## 作者
+## Contributors
 
-Feego(lvyauhi8@gmail.com)
+- Feego (lvyauhi8@gmail.com)
+
+- Iris G
