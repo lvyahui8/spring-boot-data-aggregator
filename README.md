@@ -20,7 +20,7 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 - `@InvokeParameter`: define the method parameter dependency type as the user input value
 - Spring Bean `dataBeanAggregateQueryFacade`:  query data facade API
 
-##Example
+## Example
 
 Developing a user summary data interface that includes the user's basic information and blog list.
 
