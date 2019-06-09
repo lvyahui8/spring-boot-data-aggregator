@@ -15,6 +15,14 @@
 
 ## 使用方法
 
+```xml
+<dependency>
+  <groupId>io.github.lvyahui8</groupId>
+  <artifactId>spring-boot-data-aggregator-starter</artifactId>
+  <version>1.0.0-RELEASE</version>
+</dependency>
+```
+
 - `@DataProvider` 定义数据提供者
 - `@DataConsumer` 定义方法参数依赖类型为其他接口返回值, 其他接口是一个`@DataProvider`
 - `@InvokeParameter` 定义方法参数依赖类型为用户输入值

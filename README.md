@@ -15,6 +15,14 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
 ## Instruction
 
+```xml
+<dependency>
+  <groupId>io.github.lvyahui8</groupId>
+  <artifactId>spring-boot-data-aggregator-starter</artifactId>
+  <version>1.0.0-RELEASE</version>
+</dependency>
+```
+
 - `@DataProvider`:  define the data provider
 - `@DataConsumer`: define the method parameter dependency type as return the value of other interfaces, the other interface is a @DataProvider
 - `@InvokeParameter`: define the method parameter dependency type as the user input value
