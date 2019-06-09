@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.feego.spring.autoconfigure.BeanAggregateAutoConfiguration
+  io.github.lvyahui8.spring.autoconfigure.BeanAggregateAutoConfiguration
