@@ -15,12 +15,21 @@
 
 ## 使用方法
 
+pom.xml
+
 ```xml
 <dependency>
   <groupId>io.github.lvyahui8</groupId>
   <artifactId>spring-boot-data-aggregator-starter</artifactId>
   <version>1.0.0-RELEASE</version>
 </dependency>
+```
+
+application.properties
+
+```
+# Specify the package to scan the annotations
+io.github.lvyahui8.spring.base-packpages=io.github.lvyahui8.spring.example
 ```
 
 - `@DataProvider` 定义数据提供者

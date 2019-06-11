@@ -15,12 +15,21 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
 ## Instruction
 
+pom.xml
+
 ```xml
 <dependency>
   <groupId>io.github.lvyahui8</groupId>
   <artifactId>spring-boot-data-aggregator-starter</artifactId>
   <version>1.0.0-RELEASE</version>
 </dependency>
+```
+
+application.properties
+
+```
+# 指定要扫描注解的包
+io.github.lvyahui8.spring.base-packpages=io.github.lvyahui8.spring.example
 ```
 
 - `@DataProvider`:  define the data provider
@@ -44,18 +53,18 @@ require input parameter `userId`.
 
 ```java
 @Service
-Public class PostServiceImpl implements PostService {
+public class PostServiceImpl implements PostService {
     @DataProvider(id = "posts")
     @Override
-    Public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
-        Try {
+    public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
+        try {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
         }
         Post post = new Post();
         post.setTitle("spring data aggregate example");
         post.setContent("No active profile set, falling back to default profiles");
-        Return Collections.singletonList(post);
+        return Collections.singletonList(post);
     }
 }
 ```
@@ -66,13 +75,13 @@ require input parameter `userId`.
 
 ```java
 @Service
-Public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     @DataProvider(id = "user")
     @Override
-    Public User get(@InvokeParameter("userId") Long id) {
+    public User get(@InvokeParameter("userId") Long id) {
         /* */
-        Try {
+        try {
             Thread.sleep(100L);
         } catch (InterruptedException e) {
         }
@@ -81,7 +90,7 @@ Public class UserServiceImpl implements UserService {
         user.setId(id);
         user.setEmail("lvyahui8@gmail.com");
         user.setUsername("lvyahui8");
-        Return user;
+        return user;
     }
 }
 ```
@@ -92,13 +101,13 @@ Combine `@DataProvider`  ( `@DataConsumer`  \ `@InvokeParameter` ) to achieve ag
 
 ```java
 @Component
-Public class UserAggregate {
+public class UserAggregate {
     @DataProvider(id="userWithPosts")
-    Public User userWithPosts(
+    public User userWithPosts(
             @DataConsumer(id = "user") User user,
             @DataConsumer(id = "posts") List<Post> posts) {
         user.setPosts(posts);
-        Return user;
+        return user;
     }
 }
 ```
