@@ -57,7 +57,7 @@ public class PostServiceImpl implements PostService {
     @DataProvider(id = "posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
-        try {
+        try {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
         }
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         /* */
-        try {
+        try {
             Thread.sleep(100L);
         } catch (InterruptedException e) {
         }
