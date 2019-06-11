@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
     @DataProvider(id = "user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
-        /* */
         try {
             Thread.sleep(100L);
         } catch (InterruptedException e) {
