@@ -14,4 +14,5 @@ public class User {
     private String username;
     private String email;
     List<Post> posts ;
+    List<User> followers;
 }

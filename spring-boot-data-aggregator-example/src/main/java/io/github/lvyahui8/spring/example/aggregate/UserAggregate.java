@@ -2,8 +2,6 @@ package io.github.lvyahui8.spring.example.aggregate;
 
 import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.annotation.DataProvider;
-import io.github.lvyahui8.spring.annotation.DataConsumer;
-import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
 import org.springframework.stereotype.Component;
@@ -20,6 +18,15 @@ public class UserAggregate {
     public User userWithPosts(
             @DataConsumer(id = "user") User user,
             @DataConsumer(id = "posts") List<Post> posts) {
+        user.setPosts(posts);
+        return user;
+    }
+
+    @DataProvider(id="userFullData")
+    public User userFullData(@DataConsumer(id = "user") User user,
+                             @DataConsumer(id = "posts") List<Post> posts,
+                             @DataConsumer(id = "followers") List<User> followers) {
+        user.setFollowers(followers);
         user.setPosts(posts);
         return user;
     }
