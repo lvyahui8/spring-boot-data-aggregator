@@ -28,7 +28,7 @@ pom.xml
 application.properties
 
 ```
-# Specify the package to scan the annotations
+# 指定要扫描注解的包
 io.github.lvyahui8.spring.base-packpages=io.github.lvyahui8.spring.example
 ```
 
