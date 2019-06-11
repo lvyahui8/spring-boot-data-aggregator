@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "io.github.lvyahui8.spring")
 @Data
 public class BeanAggregateProperties {
-    private String [] basePackpages;
+    private String [] basePackages;
     private int threadNumber = Runtime.getRuntime().availableProcessors() * 3 ;
     private int queueSize = 1000;
 }

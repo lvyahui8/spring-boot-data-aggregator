@@ -74,8 +74,8 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     }
 
     private void scanProviders(DataProviderRepository repository) {
-        if(properties.getBasePackpages() != null) {
-            for (String basePackage : properties.getBasePackpages()) {
+        if(properties.getBasePackages() != null) {
+            for (String basePackage : properties.getBasePackages()) {
                 Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
                 Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
                 for (Method method : providerMethods) {

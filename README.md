@@ -29,7 +29,7 @@ application.properties
 
 ```
 # Specify the package to scan the annotations
-io.github.lvyahui8.spring.base-packpages=io.github.lvyahui8.spring.example
+io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
 - `@DataProvider`:  define the data provider
