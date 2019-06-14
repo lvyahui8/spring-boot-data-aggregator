@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.autoconfigure;
 
+import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFacadeImpl;
 import io.github.lvyahui8.spring.aggregate.model.*;
@@ -20,7 +21,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -56,6 +60,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         DataProviderRepository repository = new DataProviderRepositoryImpl();
         scanProviders(repository);
         DataBeanAgregateQueryServiceImpl service = new DataBeanAgregateQueryServiceImpl(repository);
+        service.setRuntimeSettings(createRuntimeSettings());
         service.setExecutorService(aggregateExecutorService());
         service.setApplicationContext(applicationContext);
         return new DataBeanAggregateQueryFacadeImpl(service);
@@ -64,13 +69,12 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     @Bean(name = "aggregateExecutorService")
     @ConditionalOnMissingBean(name = "aggregateExecutorService")
     public ExecutorService aggregateExecutorService() {
-        log.info("create a ThreadPoolExecutor");
         return new ThreadPoolExecutor(
-                4,
-                properties.getThreadNumber()  < 4 ? 4 : properties.getThreadNumber() ,
+                properties.getThreadNumber(),
+                properties.getThreadNumber() ,
                 2L, TimeUnit.HOURS,
                 new LinkedBlockingDeque<>(properties.getQueueSize()),
-                new CustomizableThreadFactory("aggregateTask-"));
+                new CustomizableThreadFactory(properties.getThreadPrefix()));
     }
 
     private void scanProviders(DataProviderRepository repository) {
@@ -87,10 +91,12 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
     private void dealProvideMethod(DataProviderRepository repository, Method method) {
         DataProvideDefination provider = new DataProvideDefination();
-        DataProvider beanProvider = method.getAnnotation(DataProvider.class);
-        provider.setId(beanProvider.id());
+        DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
+        String dataId = beanProvider.id();
+        Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
+        provider.setId(dataId);
         provider.setMethod(method);
-        provider.setTimeout(beanProvider.timeout());
+        provider.setTimeout(beanProvider.timeout() > 0 ? beanProvider.timeout() : properties.getDefaultTimeout());
         Parameter[] parameters = provider.getMethod().getParameters();
         List<MethodArg> methodArgs = new ArrayList<>(method.getParameterCount());
         provider.setDepends(new ArrayList<>(method.getParameterCount()));
@@ -99,31 +105,40 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
             dealMethodParamter(provider, methodArgs, parameter);
         }
         provider.setMethodArgs(methodArgs);
-        repository.put(beanProvider.id(),provider);
+        repository.put(dataId,provider);
     }
 
     private void dealMethodParamter(DataProvideDefination provideDefination, List<MethodArg> methodArgs, Parameter parameter) {
+        DataConsumer dataConsumer = AnnotationUtils.findAnnotation(parameter, DataConsumer.class);
+        InvokeParameter invokeParameter = AnnotationUtils.findAnnotation(parameter,InvokeParameter.class);
+        Assert.isTrue(dataConsumer != null || invokeParameter != null,
+                "Parameters must be added @InvokeParameter or @DataConsumer annotation");
         MethodArg methodArg = new MethodArg();
-        DataConsumer bean = parameter.getAnnotation(DataConsumer.class);
-        InvokeParameter invokeParameter = parameter.getAnnotation(InvokeParameter.class);
-        if(bean != null) {
-            methodArg.setAnnotionKey(bean.id());
+        if(dataConsumer != null) {
+            String dataId = dataConsumer.id();
+            Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
+            methodArg.setAnnotionKey(dataId);
             methodArg.setDenpendType(DenpendType.OTHER_MODEL);
             DataConsumeDefination dataConsumeDefination = new DataConsumeDefination();
             dataConsumeDefination.setClazz(parameter.getType());
-            dataConsumeDefination.setId(bean.id());
+            dataConsumeDefination.setId(dataId);
             provideDefination.getDepends().add(dataConsumeDefination);
-        } else if (invokeParameter != null){
+        } else {
             methodArg.setAnnotionKey(invokeParameter.value());
             methodArg.setDenpendType(DenpendType.INVOKE_PARAM);
             InvokeParameterDefination parameterDefination = new InvokeParameterDefination();
             parameterDefination.setKey(invokeParameter.value());
             provideDefination.getParams().add(parameterDefination);
-        } else {
-            throw new IllegalArgumentException(
-                    "paramter must ananotion by InvokeParameter or DataConsumer");
         }
         methodArg.setParameter(parameter);
         methodArgs.add(methodArg);
     }
+
+    private RuntimeSettings createRuntimeSettings() {
+        RuntimeSettings runtimeSettings = new RuntimeSettings();
+        runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
+                ? properties.getEnableLogging() : false);
+        return runtimeSettings;
+    }
+
 }

@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.aggregate.service.impl;
 
+import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.model.DataConsumeDefination;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefination;
 import io.github.lvyahui8.spring.aggregate.model.DenpendType;
@@ -30,6 +31,9 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
 
     @Setter
     private ExecutorService executorService;
+
+    @Setter
+    private RuntimeSettings runtimeSettings;
 
     public DataBeanAgregateQueryServiceImpl(DataProviderRepository repository) {
         this.repository = repository;
@@ -86,7 +90,12 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
 
         T result = resultType.cast(provider.getMethod()
                 .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args));
-        if (log.isInfoEnabled()) {
+        logging(id, startTime, provider);
+        return result;
+    }
+
+    private void logging(String id, long startTime, DataProvideDefination provider) {
+        if (runtimeSettings.isEnableLogging() && log.isInfoEnabled()) {
             log.info("query id: {}, " +
                             "costTime: {}ms, " +
                             "resultType: {},  " +
@@ -97,7 +106,6 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
                     provider.getMethod().getDeclaringClass().getSimpleName() + "#" + provider.getMethod().getName()
                     );
         }
-        return result;
     }
 
 }

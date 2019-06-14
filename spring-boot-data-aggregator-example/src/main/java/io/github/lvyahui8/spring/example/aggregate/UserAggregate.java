@@ -14,10 +14,10 @@ import java.util.List;
  */
 @Component
 public class UserAggregate {
-    @DataProvider(id="userWithPosts")
+    @DataProvider("userWithPosts")
     public User userWithPosts(
             @DataConsumer(id = "user") User user,
-            @DataConsumer(id = "posts") List<Post> posts) {
+            @DataConsumer("posts") List<Post> posts) {
         user.setPosts(posts);
         return user;
     }
