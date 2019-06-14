@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.example;
 
+import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import lombok.extern.slf4j.Slf4j;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.example.model.User;
@@ -28,6 +29,9 @@ public class ExampleApplication {
         Assert.notNull(user.getPosts(),"user posts not null");
         log.info("user.name:{},user.posts.size:{}",
                 user.getUsername(),user.getPosts().size());
+
+        user = context.getBean(UserQueryFacade.class).getUserFinal(1L);
+        Assert.notNull(user.getFollowers(),"user followers not null");
 
         ExecutorService executorService = (ExecutorService) context.getBean("aggregateExecutorService");
         executorService.shutdown();
