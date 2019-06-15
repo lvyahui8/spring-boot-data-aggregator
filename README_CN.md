@@ -54,7 +54,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```java
 @Service
 public class PostServiceImpl implements PostService {
-    @DataProvider(id = "posts")
+    @DataProvider("posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         try {
@@ -78,7 +78,7 @@ public class PostServiceImpl implements PostService {
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataProvider(id = "user")
+    @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         /* */
@@ -104,10 +104,10 @@ public class UserServiceImpl implements UserService {
 ```java
 @Component
 public class UserAggregate {
-    @DataProvider(id="userWithPosts")
+    @DataProvider("userWithPosts")
     public User userWithPosts(
-            @DataConsumer(id = "user") User user,
-            @DataConsumer(id = "posts") List<Post> posts) {
+            @DataConsumer("user") User user,
+            @DataConsumer("posts") List<Post> posts) {
         user.setPosts(posts);
         return user;
     }

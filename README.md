@@ -54,7 +54,7 @@ require input parameter `userId`.
 ```java
 @Service
 public class PostServiceImpl implements PostService {
-    @DataProvider(id = "posts")
+    @DataProvider("posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         try {
@@ -77,7 +77,7 @@ require input parameter `userId`.
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataProvider(id = "user")
+    @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         try {
@@ -101,10 +101,10 @@ Combine `@DataProvider`  ( `@DataConsumer`  \ `@InvokeParameter` ) to achieve ag
 ```java
 @Component
 public class UserAggregate {
-    @DataProvider(id="userWithPosts")
+    @DataProvider("userWithPosts")
     public User userWithPosts(
-            @DataConsumer(id = "user") User user,
-            @DataConsumer(id = "posts") List<Post> posts) {
+            @DataConsumer("user") User user,
+            @DataConsumer("posts") List<Post> posts) {
         user.setPosts(posts);
         return user;
     }
