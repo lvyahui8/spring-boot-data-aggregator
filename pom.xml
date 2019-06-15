@@ -6,7 +6,7 @@
 
     <groupId>io.github.lvyahui8</groupId>
     <artifactId>spring-boot-data-aggregator</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <modules>
         <module>spring-boot-data-aggregator-core</module>
         <module>spring-boot-data-aggregator-autoconfigure</module>
