@@ -2,8 +2,6 @@ package io.github.lvyahui8.spring.example.service.impl;
 
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
-import io.github.lvyahui8.spring.annotation.DataProvider;
-import io.github.lvyahui8.spring.annotation.InvokeParameter;
 import io.github.lvyahui8.spring.example.model.User;
 import io.github.lvyahui8.spring.example.service.UserService;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataProvider(id = "user")
+    @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
         /* */

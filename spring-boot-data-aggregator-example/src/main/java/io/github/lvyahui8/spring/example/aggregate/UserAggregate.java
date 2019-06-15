@@ -22,10 +22,10 @@ public class UserAggregate {
         return user;
     }
 
-    @DataProvider(id="userFullData")
-    public User userFullData(@DataConsumer(id = "user") User user,
-                             @DataConsumer(id = "posts") List<Post> posts,
-                             @DataConsumer(id = "followers") List<User> followers) {
+    @DataProvider("userFullData")
+    public User userFullData(@DataConsumer("user") User user,
+                             @DataConsumer("posts") List<Post> posts,
+                             @DataConsumer("followers") List<User> followers) {
         user.setFollowers(followers);
         user.setPosts(posts);
         return user;

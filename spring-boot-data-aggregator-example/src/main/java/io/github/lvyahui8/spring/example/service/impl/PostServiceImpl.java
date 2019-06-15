@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl implements PostService {
-    @DataProvider(id = "posts")
+    @DataProvider("posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         Assert.isTrue(userId != null && userId != 0, "userId must be not null and gt 0!");

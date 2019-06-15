@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Service
 public class FollowServiceImpl implements FollowService {
-    @DataProvider(id = "followers")
+    @DataProvider("followers")
     @Override
     public List<User> getFollowers(@InvokeParameter("userId") Long userId) {
         try { Thread.sleep(1000L); } catch (InterruptedException e) {}
