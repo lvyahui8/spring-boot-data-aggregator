@@ -17,21 +17,25 @@ public class BeanAggregateProperties {
     /**
      * Thread name prefix for asynchronous threads
      */
-    private String   threadPrefix   = "aggregateTask-";
+    private String   threadPrefix    = "aggregateTask-";
     /**
      * Thread size of the asynchronous thread pool
      */
-    private int      threadNumber   = Runtime.getRuntime().availableProcessors() * 3;
+    private int      threadNumber    = Runtime.getRuntime().availableProcessors() * 3;
     /**
      * The size of the queue that holds the task to be executed
      */
-    private int      queueSize      = 1000;
+    private int      queueSize       = 1000;
     /**
      * Set a default timeout for the method of providing data
      */
-    private Long     defaultTimeout = 3000L;
+    private Long     defaultTimeout  = 3000L;
     /**
      * Allow output log
      */
-    private Boolean  enableLogging  = true;
+    private Boolean  enableLogging   = true;
+    /**
+     * Ignore exception thrown by asynchronous execution, method returns null value
+     */
+    private boolean ignoreException = false;
 }

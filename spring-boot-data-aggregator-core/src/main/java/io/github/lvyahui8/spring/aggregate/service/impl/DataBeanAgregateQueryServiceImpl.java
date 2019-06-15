@@ -49,14 +49,14 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
         if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
             CountDownLatch stopDownLatch = new CountDownLatch(provider.getDepends().size());
             Map<String,Future<?>> futureMap = new HashMap<>(provider.getDepends().size());
+            Map<String,DataConsumeDefination> consumeDefinationMap = new HashMap<>(provider.getDepends().size());
             for (DataConsumeDefination depend : provider.getDepends()) {
+                consumeDefinationMap.put(depend.getId(),depend);
                 Future<?> future = executorService.submit(() -> {
                     try {
                         Object o = get(depend.getId(), invokeParams, depend.getClazz());
                         return depend.getClazz().cast(o);
-                    } catch (Exception e) {
-                        return null;
-                    }finally {
+                    } finally {
                         stopDownLatch.countDown();
                     }
                 });
@@ -65,11 +65,18 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
             stopDownLatch.await(provider.getTimeout(),TimeUnit.MILLISECONDS);
             if(! futureMap.isEmpty()){
                 for (Map.Entry<String,Future<?>> item : futureMap.entrySet()) {
+                    Future<?> future = item.getValue();
+                    Object value = null;
+                    DataConsumeDefination consumeDefination = consumeDefinationMap.get(item.getKey());
                     try {
-                        dependObjectMap.put(item.getKey(),item.getValue().get());
+                        value = future.get();
                     } catch (ExecutionException e) {
-                        //
+                        if (consumeDefination.getIgnoreException() != null ? ! consumeDefination.getIgnoreException()
+                                : ! runtimeSettings.isIgnoreException()) {
+                            throwException(e);
+                        }
                     }
+                    dependObjectMap.put(item.getKey(),value);
                 }
             }
         }
@@ -82,16 +89,30 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
             } else {
                 args[i] = invokeParams.get(methodArg.getAnnotionKey());
             }
-            if (! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
+            if (args[i] != null && ! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
                 throw new IllegalArgumentException("param type not match, param:"
                         + methodArg.getParameter().getName());
             }
         }
+        try {
+            return resultType.cast(provider.getMethod()
+                    .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args));
+        } finally {
+            logging(id, startTime, provider);
+        }
+    }
 
-        T result = resultType.cast(provider.getMethod()
-                .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args));
-        logging(id, startTime, provider);
-        return result;
+    private void throwException(ExecutionException e)  throws InterruptedException,
+            InvocationTargetException, IllegalAccessException  {
+        if (e.getCause() instanceof InterruptedException) {
+            throw (InterruptedException) e.getCause();
+        } else if (e.getCause() instanceof  InvocationTargetException){
+            throw (InvocationTargetException) e.getCause();
+        } else if (e.getCause() instanceof IllegalAccessException) {
+            throw (IllegalAccessException) e.getCause();
+        } else {
+            throw (RuntimeException) e.getCause();
+        }
     }
 
     private void logging(String id, long startTime, DataProvideDefination provider) {

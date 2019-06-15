@@ -10,4 +10,5 @@ import lombok.Data;
 public class DataConsumeDefination {
     private String id;
     private Class<?> clazz;
+    private Boolean ignoreException;
 }

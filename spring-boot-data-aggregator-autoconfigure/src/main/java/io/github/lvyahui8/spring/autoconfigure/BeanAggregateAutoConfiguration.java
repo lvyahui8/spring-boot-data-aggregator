@@ -10,6 +10,7 @@ import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAgregateQuerySer
 import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
+import io.github.lvyahui8.spring.enums.ExceptionProcessingMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -122,6 +123,11 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
             DataConsumeDefination dataConsumeDefination = new DataConsumeDefination();
             dataConsumeDefination.setClazz(parameter.getType());
             dataConsumeDefination.setId(dataId);
+            if(! dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.BY_DEFAULT)) {
+                dataConsumeDefination.setIgnoreException(
+                        dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.IGNORE)
+                );
+            }
             provideDefination.getDepends().add(dataConsumeDefination);
         } else {
             methodArg.setAnnotionKey(invokeParameter.value());
@@ -138,6 +144,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
                 ? properties.getEnableLogging() : false);
+        runtimeSettings.setIgnoreException(properties.isIgnoreException());
         return runtimeSettings;
     }
 

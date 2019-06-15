@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.annotation;
 
+import io.github.lvyahui8.spring.enums.ExceptionProcessingMethod;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -25,4 +26,10 @@ public @interface DataConsumer {
      */
     @AliasFor("id")
     String value() default "";
+
+    /**
+     * Exception handling, default by global configuration
+     */
+    ExceptionProcessingMethod exceptionProcessingMethod()
+            default ExceptionProcessingMethod.BY_DEFAULT;
 }
