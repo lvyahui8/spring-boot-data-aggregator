@@ -1,8 +1,7 @@
 package io.github.lvyahui8.spring.aggregate.facade.impl;
 
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAgregateQueryService;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAgregateQueryService;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,10 +14,10 @@ import java.util.Map;
  */
 public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryFacade {
 
-    private DataBeanAgregateQueryService dataBeanAgregateQueryService;
+    private DataBeanAggregateQueryService dataBeanAggregateQueryService;
 
-    public DataBeanAggregateQueryFacadeImpl(DataBeanAgregateQueryService dataBeanAgregateQueryService) {
-        this.dataBeanAgregateQueryService = dataBeanAgregateQueryService;
+    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateQueryService dataBeanAggregateQueryService) {
+        this.dataBeanAggregateQueryService = dataBeanAggregateQueryService;
     }
 
     @Override
@@ -28,6 +27,6 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAgregateQueryService.get(id,invokeParams,clazz);
+        return dataBeanAggregateQueryService.get(id,invokeParams,clazz);
     }
 }

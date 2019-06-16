@@ -7,7 +7,7 @@ import java.util.Map;
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/6/2 21:49
  */
-public interface DataBeanAgregateQueryService {
+public interface DataBeanAggregateQueryService {
 
     /**
      * 并发+递归获取并拼装数据

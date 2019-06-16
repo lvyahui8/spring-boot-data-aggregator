@@ -6,7 +6,7 @@ import io.github.lvyahui8.spring.aggregate.model.DataProvideDefination;
 import io.github.lvyahui8.spring.aggregate.model.DenpendType;
 import io.github.lvyahui8.spring.aggregate.model.MethodArg;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAgregateQueryService;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  * @since 2019/6/2 21:50
  */
 @Slf4j
-public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQueryService {
+public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQueryService {
 
     private DataProviderRepository repository;
 
@@ -35,7 +35,7 @@ public class DataBeanAgregateQueryServiceImpl implements DataBeanAgregateQuerySe
     @Setter
     private RuntimeSettings runtimeSettings;
 
-    public DataBeanAgregateQueryServiceImpl(DataProviderRepository repository) {
+    public DataBeanAggregateQueryServiceImpl(DataProviderRepository repository) {
         this.repository = repository;
     }
 
