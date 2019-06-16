@@ -6,7 +6,7 @@ import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFac
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.repository.impl.DataProviderRepositoryImpl;
-import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAgregateQueryServiceImpl;
+import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
@@ -60,7 +60,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     public DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade() {
         DataProviderRepository repository = new DataProviderRepositoryImpl();
         scanProviders(repository);
-        DataBeanAgregateQueryServiceImpl service = new DataBeanAgregateQueryServiceImpl(repository);
+        DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl(repository);
         service.setRuntimeSettings(createRuntimeSettings());
         service.setExecutorService(aggregateExecutorService());
         service.setApplicationContext(applicationContext);
