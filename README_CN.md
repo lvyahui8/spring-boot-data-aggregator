@@ -21,7 +21,7 @@ pom.xml
 <dependency>
   <groupId>io.github.lvyahui8</groupId>
   <artifactId>spring-boot-data-aggregator-starter</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
