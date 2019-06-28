@@ -33,7 +33,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
 - `@DataProvider`:  define the data provider
-- `@DataConsumer`: define the method parameter dependency type as return the value of other interfaces, the other interface is a @DataProvider
+- `@DataConsumer`: define the method parameter dependency type as return the value of other interfaces, the other interface is a `@DataProvider`
 - `@InvokeParameter`: define the method parameter dependency type as the user input value
 - Spring Bean `dataBeanAggregateQueryFacade`:  query data facade API
 
