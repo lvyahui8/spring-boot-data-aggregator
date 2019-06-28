@@ -1,10 +1,8 @@
 package io.github.lvyahui8.spring.aggregate.service.impl;
 
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
-import io.github.lvyahui8.spring.aggregate.model.DataConsumeDefination;
-import io.github.lvyahui8.spring.aggregate.model.DataProvideDefination;
-import io.github.lvyahui8.spring.aggregate.model.DenpendType;
-import io.github.lvyahui8.spring.aggregate.model.MethodArg;
+import io.github.lvyahui8.spring.aggregate.consts.AggregatorConstant;
+import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
@@ -40,8 +38,8 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
     }
 
     @Override
-    public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType) throws InterruptedException,
-            InvocationTargetException, IllegalAccessException {
+    public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType,final Map<InvokeSign,Object> queryCache)
+            throws InterruptedException, InvocationTargetException, IllegalAccessException {
         Assert.isTrue(repository.contains(id),"id not exisit");
         long startTime = System.currentTimeMillis();
         DataProvideDefination provider = repository.get(id);
@@ -54,7 +52,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
                 consumeDefinationMap.put(depend.getId(),depend);
                 Future<?> future = executorService.submit(() -> {
                     try {
-                        Object o = get(depend.getId(), invokeParams, depend.getClazz());
+                        Object o = get(depend.getId(), invokeParams, depend.getClazz(),queryCache);
                         return depend.getClazz().cast(o);
                     } finally {
                         stopDownLatch.countDown();
@@ -95,8 +93,20 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             }
         }
         try {
-            return resultType.cast(provider.getMethod()
-                    .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args));
+            /* 如果调用方法是幂等的, 那么当方法签名和方法参数完全一致时, 可以直接使用缓存结果 */
+            InvokeSign invokeSign = new InvokeSign(provider.getMethod(),args);
+            Object resultModel;
+            if(queryCache.containsKey(invokeSign)) {
+                resultModel = queryCache.get(invokeSign);
+            }
+            else {
+                resultModel = provider.getMethod()
+                        .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args);
+                /* Map 中可能不能放空value */
+                queryCache.put(invokeSign,resultModel != null ? resultModel : AggregatorConstant.EMPTY_MODEL);
+            }
+
+            return resultType.cast(resultModel != AggregatorConstant.EMPTY_MODEL ? resultModel : null);
         } finally {
             logging(id, startTime, provider);
         }

@@ -1,9 +1,9 @@
 package io.github.lvyahui8.spring.example;
 
-import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
-import lombok.extern.slf4j.Slf4j;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
+import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import io.github.lvyahui8.spring.example.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,18 +22,35 @@ import java.util.concurrent.ExecutorService;
 public class ExampleApplication {
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
-        DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
+        try{
+            DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
 
-        User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
-        Assert.notNull(user,"user not null");
-        Assert.notNull(user.getPosts(),"user posts not null");
-        log.info("user.name:{},user.posts.size:{}",
-                user.getUsername(),user.getPosts().size());
+            {
+                User user = queryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
+                Assert.notNull(user,"user not null");
+                Assert.notNull(user.getPosts(),"user posts not null");
+                log.info("user.name:{},user.posts.size:{}",
+                        user.getUsername(),user.getPosts().size());
+            }
 
-        user = context.getBean(UserQueryFacade.class).getUserFinal(1L);
-        Assert.notNull(user.getFollowers(),"user followers not null");
+            log.info("------------------------------------------------------------------");
 
-        ExecutorService executorService = (ExecutorService) context.getBean("aggregateExecutorService");
-        executorService.shutdown();
+            {
+                User user = context.getBean(UserQueryFacade.class).getUserFinal(1L);
+                Assert.notNull(user.getFollowers(),"user followers not null");
+            }
+
+            log.info("------------------------------------------------------------------");
+
+            {
+                for (int i = 0; i < 100; i ++) {
+                    String s = queryFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
+                    Assert.isTrue(org.apache.commons.lang3.StringUtils.isNotEmpty(s),"s  not null");
+                }
+            }
+        } finally {
+            ExecutorService executorService = (ExecutorService) context.getBean("aggregateExecutorService");
+            executorService.shutdown();
+        }
     }
 }

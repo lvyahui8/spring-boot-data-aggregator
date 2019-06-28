@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
@@ -27,6 +28,6 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAggregateQueryService.get(id,invokeParams,clazz);
+        return dataBeanAggregateQueryService.get(id,invokeParams,clazz,new ConcurrentHashMap<>());
     }
 }
