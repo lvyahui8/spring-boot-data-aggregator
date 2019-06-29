@@ -11,11 +11,11 @@ import java.util.Objects;
  * @since 2019/6/28 22:42
  */
 @Data
-public class InvokeSign {
+public class InvokeSignature {
     private Method method;
     private Object[] args;
 
-    public InvokeSign(Method method, Object[] args) {
+    public InvokeSignature(Method method, Object[] args) {
         this.method = method;
         this.args = args;
     }
@@ -24,7 +24,7 @@ public class InvokeSign {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InvokeSign that = (InvokeSign) o;
+        InvokeSignature that = (InvokeSignature) o;
         return Objects.deepEquals(method, that.method) &&
                 Arrays.deepEquals(args, that.args);
     }

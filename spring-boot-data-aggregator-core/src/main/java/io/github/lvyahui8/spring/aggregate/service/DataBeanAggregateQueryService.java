@@ -1,6 +1,6 @@
 package io.github.lvyahui8.spring.aggregate.service;
 
-import io.github.lvyahui8.spring.aggregate.model.InvokeSign;
+import io.github.lvyahui8.spring.aggregate.model.InvokeSignature;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -21,6 +21,6 @@ public interface DataBeanAggregateQueryService {
      * @param queryCache Used to cache data during the query
      * @return final result
      */
-    <T> T get(String id, Map<String,Object> invokeParams, Class<T> resultType,final Map<InvokeSign,Object> queryCache)
+    <T> T get(String id, Map<String,Object> invokeParams, Class<T> resultType,final Map<InvokeSignature,Object> queryCache)
             throws InterruptedException, InvocationTargetException, IllegalAccessException;
 }
