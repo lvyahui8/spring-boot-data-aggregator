@@ -43,7 +43,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         Assert.isTrue(repository.contains(id),"id not exisit");
         long startTime = System.currentTimeMillis();
         DataProvideDefination provider = repository.get(id);
-        Map<String,Object> dependObjectMap = new HashMap<>();
+        Map<String,Object> dependObjectMap = new HashMap<>(provider.getDepends().size());
         if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
             CountDownLatch stopDownLatch = new CountDownLatch(provider.getDepends().size());
             Map<String,Future<?>> futureMap = new HashMap<>(provider.getDepends().size());
