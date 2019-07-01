@@ -43,6 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @DataProvider("topCategoryNames")
+    @Override
     public List<String> getTopCategoryNames() {
         Random r = new Random(System.currentTimeMillis());
         return Stream.of("feego", "figo", "sam").map(item -> item+r.nextInt(1000))

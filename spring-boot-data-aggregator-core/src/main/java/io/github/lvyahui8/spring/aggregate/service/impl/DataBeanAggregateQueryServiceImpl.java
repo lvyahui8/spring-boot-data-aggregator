@@ -40,16 +40,16 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
     @Override
     public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType,final Map<InvokeSignature,Object> queryCache)
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
-        Assert.isTrue(repository.contains(id),"id not exisit");
+        Assert.isTrue(repository.contains(id),"id not exist");
         long startTime = System.currentTimeMillis();
-        DataProvideDefination provider = repository.get(id);
+        DataProvideDefinition provider = repository.get(id);
         Map<String,Object> dependObjectMap = new HashMap<>(provider.getDepends().size());
         if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
             CountDownLatch stopDownLatch = new CountDownLatch(provider.getDepends().size());
             Map<String,Future<?>> futureMap = new HashMap<>(provider.getDepends().size());
-            Map<String,DataConsumeDefination> consumeDefinationMap = new HashMap<>(provider.getDepends().size());
-            for (DataConsumeDefination depend : provider.getDepends()) {
-                consumeDefinationMap.put(depend.getId(),depend);
+            Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(provider.getDepends().size());
+            for (DataConsumeDefinition depend : provider.getDepends()) {
+                consumeDefinitionMap.put(depend.getId(),depend);
                 Future<?> future = executorService.submit(() -> {
                     try {
                         Object o = get(depend.getId(), invokeParams, depend.getClazz(),queryCache);
@@ -65,11 +65,11 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
                 for (Map.Entry<String,Future<?>> item : futureMap.entrySet()) {
                     Future<?> future = item.getValue();
                     Object value = null;
-                    DataConsumeDefination consumeDefination = consumeDefinationMap.get(item.getKey());
+                    DataConsumeDefinition consumeDefinition = consumeDefinitionMap.get(item.getKey());
                     try {
                         value = future.get();
                     } catch (ExecutionException e) {
-                        if (consumeDefination.getIgnoreException() != null ? ! consumeDefination.getIgnoreException()
+                        if (consumeDefinition.getIgnoreException() != null ? ! consumeDefinition.getIgnoreException()
                                 : ! runtimeSettings.isIgnoreException()) {
                             throwException(e);
                         }
@@ -82,10 +82,10 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         Object [] args = new Object[provider.getMethod().getParameterCount()];
         for (int i = 0 ; i < provider.getMethodArgs().size(); i ++) {
             MethodArg methodArg = provider.getMethodArgs().get(i);
-            if (methodArg.getDenpendType().equals(DenpendType.OTHER_MODEL)) {
-                args[i] = dependObjectMap.get(methodArg.getAnnotionKey());
+            if (methodArg.getDependType().equals(DependType.OTHER_MODEL)) {
+                args[i] = dependObjectMap.get(methodArg.getAnnotationKey());
             } else {
-                args[i] = invokeParams.get(methodArg.getAnnotionKey());
+                args[i] = invokeParams.get(methodArg.getAnnotationKey());
             }
             if (args[i] != null && ! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
                 throw new IllegalArgumentException("param type not match, param:"
@@ -125,7 +125,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         }
     }
 
-    private void logging(String id, long startTime, DataProvideDefination provider) {
+    private void logging(String id, long startTime, DataProvideDefinition provider) {
         if (runtimeSettings.isEnableLogging() && log.isInfoEnabled()) {
             log.info("query id: {}, " +
                             "costTime: {}ms, " +

@@ -1,12 +1,10 @@
 package io.github.lvyahui8.spring.aggregate.model;
 
-import lombok.Data;
-
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
- * @since 2019/6/2 22:14
+ * @since 2019/6/3 22:44
  */
-@Data
-public class InvokeParameterDefination {
-    private String key;
+public enum DependType {
+    INVOKE_PARAM,
+    OTHER_MODEL
 }

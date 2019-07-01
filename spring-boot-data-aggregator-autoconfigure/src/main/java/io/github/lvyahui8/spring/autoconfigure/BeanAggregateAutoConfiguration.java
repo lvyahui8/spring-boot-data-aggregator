@@ -91,7 +91,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     }
 
     private void dealProvideMethod(DataProviderRepository repository, Method method) {
-        DataProvideDefination provider = new DataProvideDefination();
+        DataProvideDefinition provider = new DataProvideDefinition();
         DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
         String dataId = beanProvider.id();
         Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
@@ -103,13 +103,13 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         provider.setDepends(new ArrayList<>(method.getParameterCount()));
         provider.setParams(new ArrayList<>(method.getParameterCount()));
         for (Parameter parameter : parameters) {
-            dealMethodParamter(provider, methodArgs, parameter);
+            dealMethodParameter(provider, methodArgs, parameter);
         }
         provider.setMethodArgs(methodArgs);
         repository.put(dataId,provider);
     }
 
-    private void dealMethodParamter(DataProvideDefination provideDefination, List<MethodArg> methodArgs, Parameter parameter) {
+    private void dealMethodParameter(DataProvideDefinition provideDefinition, List<MethodArg> methodArgs, Parameter parameter) {
         DataConsumer dataConsumer = AnnotationUtils.findAnnotation(parameter, DataConsumer.class);
         InvokeParameter invokeParameter = AnnotationUtils.findAnnotation(parameter,InvokeParameter.class);
         Assert.isTrue(dataConsumer != null || invokeParameter != null,
@@ -118,23 +118,23 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         if(dataConsumer != null) {
             String dataId = dataConsumer.id();
             Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
-            methodArg.setAnnotionKey(dataId);
-            methodArg.setDenpendType(DenpendType.OTHER_MODEL);
-            DataConsumeDefination dataConsumeDefination = new DataConsumeDefination();
-            dataConsumeDefination.setClazz(parameter.getType());
-            dataConsumeDefination.setId(dataId);
+            methodArg.setAnnotationKey(dataId);
+            methodArg.setDependType(DependType.OTHER_MODEL);
+            DataConsumeDefinition dataConsumeDefinition = new DataConsumeDefinition();
+            dataConsumeDefinition.setClazz(parameter.getType());
+            dataConsumeDefinition.setId(dataId);
             if(! dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.BY_DEFAULT)) {
-                dataConsumeDefination.setIgnoreException(
+                dataConsumeDefinition.setIgnoreException(
                         dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.IGNORE)
                 );
             }
-            provideDefination.getDepends().add(dataConsumeDefination);
+            provideDefinition.getDepends().add(dataConsumeDefinition);
         } else {
-            methodArg.setAnnotionKey(invokeParameter.value());
-            methodArg.setDenpendType(DenpendType.INVOKE_PARAM);
-            InvokeParameterDefination parameterDefination = new InvokeParameterDefination();
-            parameterDefination.setKey(invokeParameter.value());
-            provideDefination.getParams().add(parameterDefination);
+            methodArg.setAnnotationKey(invokeParameter.value());
+            methodArg.setDependType(DependType.INVOKE_PARAM);
+            InvokeParameterDefinition parameterDefinition = new InvokeParameterDefinition();
+            parameterDefinition.setKey(invokeParameter.value());
+            provideDefinition.getParams().add(parameterDefinition);
         }
         methodArg.setParameter(parameter);
         methodArgs.add(methodArg);

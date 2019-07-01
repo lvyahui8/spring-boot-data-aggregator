@@ -7,7 +7,7 @@ import lombok.Data;
  * @since 2019/6/2 22:13
  */
 @Data
-public class DataConsumeDefination {
+public class DataConsumeDefinition {
     private String id;
     private Class<?> clazz;
     private Boolean ignoreException;

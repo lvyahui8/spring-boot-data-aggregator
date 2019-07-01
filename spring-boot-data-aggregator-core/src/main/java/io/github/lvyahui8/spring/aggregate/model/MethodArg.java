@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
  */
 @Data
 public class MethodArg {
-    private String annotionKey;
-    private DenpendType denpendType;
-    private Parameter parameter;
+    private String     annotationKey;
+    private DependType dependType;
+    private Parameter  parameter;
 }
