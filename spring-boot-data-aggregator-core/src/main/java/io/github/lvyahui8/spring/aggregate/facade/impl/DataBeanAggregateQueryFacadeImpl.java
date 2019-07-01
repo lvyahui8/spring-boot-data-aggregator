@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.aggregate.facade.impl;
 
+import io.github.lvyahui8.spring.aggregate.consts.AggregatorConstant;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import org.springframework.util.Assert;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryFacade {
 
-    private DataBeanAggregateQueryService dataBeanAggregateQueryService;
+    private final DataBeanAggregateQueryService dataBeanAggregateQueryService;
 
     public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateQueryService dataBeanAggregateQueryService) {
         this.dataBeanAggregateQueryService = dataBeanAggregateQueryService;
@@ -28,6 +29,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAggregateQueryService.get(id,invokeParams,clazz,new ConcurrentHashMap<>());
+        return dataBeanAggregateQueryService.get(id,invokeParams,clazz,
+                new ConcurrentHashMap<>(AggregatorConstant.DEFAULT_INITIAL_CAPACITY));
     }
 }

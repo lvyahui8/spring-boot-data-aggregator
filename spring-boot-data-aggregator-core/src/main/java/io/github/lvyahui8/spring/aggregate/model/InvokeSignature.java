@@ -22,8 +22,12 @@ public class InvokeSignature {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         InvokeSignature that = (InvokeSignature) o;
         return Objects.deepEquals(method, that.method) &&
                 Arrays.deepEquals(args, that.args);

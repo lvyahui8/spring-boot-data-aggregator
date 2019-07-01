@@ -27,7 +27,7 @@ public class FollowServiceImpl implements FollowService {
             user.setEmail("email"+i+"@fox.com");
             user.setId((long) i);
             users.add(user);
-        };
+        }
         return users;
     }
 }

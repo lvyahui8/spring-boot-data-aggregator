@@ -16,5 +16,5 @@ public enum ExceptionProcessingMethod {
     /**
      * Abort execution
      */
-    SUSPEND;
+    SUSPEND
 }

@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataProviderRepositoryImpl implements DataProviderRepository {
 
-    private ConcurrentHashMap<String,DataProvideDefinition> providerMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String,DataProvideDefinition> providerMap = new ConcurrentHashMap<>();
 
     @Override
     public void put(String id, DataProvideDefinition dataProvideDefinition) {

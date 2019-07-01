@@ -1,7 +1,6 @@
 package io.github.lvyahui8.spring.example.service;
 
 import io.github.lvyahui8.spring.example.model.Post;
-import io.github.lvyahui8.spring.example.model.Post;
 
 import java.util.List;
 
@@ -10,5 +9,10 @@ import java.util.List;
  * @since 2019/6/2 16:53
  */
 public interface PostService {
+    /**
+     * s
+     * @param userId
+     * @return
+     */
     List<Post> getPosts(Long userId);
 }

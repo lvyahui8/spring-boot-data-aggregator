@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQueryService {
 
-    private DataProviderRepository repository;
+    private final DataProviderRepository repository;
 
     @Setter
     private ApplicationContext applicationContext;

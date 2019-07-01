@@ -20,6 +20,9 @@ import java.util.concurrent.ExecutorService;
 @SpringBootApplication
 @Slf4j
 public class ExampleApplication {
+
+    public static final int NUM = 100;
+
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
         try{
@@ -43,7 +46,7 @@ public class ExampleApplication {
             log.info("------------------------------------------------------------------");
 
             {
-                for (int i = 0; i < 100; i ++) {
+                for (int i = 0; i < NUM; i ++) {
                     String s = queryFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
                     Assert.isTrue(org.apache.commons.lang3.StringUtils.isNotEmpty(s),"s  not null");
                 }
