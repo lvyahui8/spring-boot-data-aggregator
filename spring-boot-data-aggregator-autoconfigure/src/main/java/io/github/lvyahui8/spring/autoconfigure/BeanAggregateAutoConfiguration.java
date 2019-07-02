@@ -94,6 +94,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     private void dealProvideMethod(DataProviderRepository repository, Method method) {
         DataProvideDefinition provider = new DataProvideDefinition();
         DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
+        @SuppressWarnings("ConstantConditions")
         String dataId = beanProvider.id();
         Assert.isTrue(Modifier.isPublic(method.getModifiers()),"data provider method must be public");
         Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");

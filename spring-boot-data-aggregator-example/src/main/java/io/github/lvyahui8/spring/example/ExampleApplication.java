@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class ExampleApplication {
 
-    public static final int NUM = 100;
+    private static final int NUM = 100;
 
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = SpringApplication.run(ExampleApplication.class);
