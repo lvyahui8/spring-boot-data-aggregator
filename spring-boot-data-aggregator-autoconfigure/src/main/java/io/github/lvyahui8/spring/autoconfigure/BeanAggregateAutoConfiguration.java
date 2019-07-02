@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +95,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         DataProvideDefinition provider = new DataProvideDefinition();
         DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
         String dataId = beanProvider.id();
+        Assert.isTrue(Modifier.isPublic(method.getModifiers()),"data provider method must be public");
         Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
         provider.setId(dataId);
         provider.setMethod(method);
