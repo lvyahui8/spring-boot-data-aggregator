@@ -1,10 +1,11 @@
 package io.github.lvyahui8.spring.example.aspect;
 
+import io.github.lvyahui8.spring.example.configuration.ExampleProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,20 +17,24 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AggregateQueryLoggingAspect {
 
-    public AggregateQueryLoggingAspect() {
-        log.info("init aspect bean");
-    }
+    @Autowired
+    private ExampleProperties exampleProperties;
 
-    @Pointcut("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl.*(..))")
-    public void aggregateQuery() {}
-
-    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl.*(..))")
+    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl.get(..))")
     public Object doLogging(ProceedingJoinPoint joinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
         Object retVal ;
         try {
             retVal = joinPoint.proceed();
         } finally {
-            log.info("x");
+            Object[] args = joinPoint.getArgs();
+            if(log.isInfoEnabled() && exampleProperties.isLogging()) {
+                log.info("query id: {}, " +
+                                "costTime: {}ms, " ,
+                        args[0],
+                        System.currentTimeMillis() - startTime
+                );
+            }
         }
         return retVal;
     }

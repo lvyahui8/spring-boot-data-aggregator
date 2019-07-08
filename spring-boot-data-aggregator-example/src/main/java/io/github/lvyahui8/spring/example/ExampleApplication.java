@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
  * @since 2019/6/1 0:13
  */
 
-@SpringBootApplication(scanBasePackages = "io.github.lvyahui8.spring.example")
+@SpringBootApplication
 @Slf4j
 public class ExampleApplication {
 
