@@ -1,5 +1,7 @@
 # Spring Boot Data Bean Parallel Aggregation Support
 
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
+
 ## Background and purpose
 
 When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.

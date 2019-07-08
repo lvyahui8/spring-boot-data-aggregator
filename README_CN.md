@@ -1,5 +1,7 @@
 # Spring Boot Data Bean 并发聚合支持
 
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
+
 ## 背景与目的
 
 在开发后台接口时, 为了开发效率, 我们往往习惯编写串行执行的代码, 去调用不同的接口, 即使这些接口之间并无依赖,  这使得最后开发的接口性能低下, 且数据不方便复用
