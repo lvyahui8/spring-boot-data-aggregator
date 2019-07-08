@@ -95,14 +95,16 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         /* 如果调用方法是幂等的, 那么当方法签名和方法参数完全一致时, 可以直接使用缓存结果 */
         InvokeSignature invokeSignature = new InvokeSignature(provider.getMethod(),args);
         Object resultModel;
-        if(queryCache.containsKey(invokeSignature)) {
+        if(provider.isIdempotent() && queryCache.containsKey(invokeSignature)) {
             resultModel = queryCache.get(invokeSignature);
         }
         else {
             resultModel = provider.getMethod()
                     .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args);
-            /* Map 中可能不能放空value */
-            queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregatorConstant.EMPTY_MODEL);
+            if(provider.isIdempotent()) {
+                /* Map 中可能不能放空value */
+                queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregatorConstant.EMPTY_MODEL);
+            }
         }
 
         return resultType.cast(resultModel != AggregatorConstant.EMPTY_MODEL ? resultModel : null);

@@ -17,4 +17,5 @@ public class DataProvideDefinition {
     private List<DataConsumeDefinition>     depends;
     private List<InvokeParameterDefinition> params;
     private List<MethodArg>                 methodArgs;
+    private boolean                         idempotent;
 }

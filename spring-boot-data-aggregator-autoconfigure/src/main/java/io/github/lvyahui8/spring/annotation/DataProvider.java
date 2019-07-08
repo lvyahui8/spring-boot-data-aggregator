@@ -32,4 +32,9 @@ public @interface DataProvider {
      */
     long timeout() default -1;
 
+    /**
+     * The call to this data providing method should be idempotent,
+     * which determines whether its execution result will be cached.
+     */
+    boolean idempotent() default true;
 }

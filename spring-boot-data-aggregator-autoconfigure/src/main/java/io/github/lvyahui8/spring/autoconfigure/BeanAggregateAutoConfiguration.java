@@ -107,6 +107,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
         provider.setId(dataId);
         provider.setMethod(method);
+        provider.setIdempotent(beanProvider.idempotent());
         provider.setTimeout(beanProvider.timeout() > 0 ? beanProvider.timeout() : properties.getDefaultTimeout());
         Parameter[] parameters = provider.getMethod().getParameters();
         List<MethodArg> methodArgs = new ArrayList<>(method.getParameterCount());
