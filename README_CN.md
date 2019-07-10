@@ -23,7 +23,7 @@ pom.xml
 <dependency>
   <groupId>io.github.lvyahui8</groupId>
   <artifactId>spring-boot-data-aggregator-starter</artifactId>
-  <version>1.0.3</version>
+  <version>{$LATEST_VERSION}</version>
 </dependency>
 ```
 
