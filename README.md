@@ -54,7 +54,7 @@ pom.xml
 
 application.properties
 
-```
+```properties
 # 指定要扫描注解的包
 io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
