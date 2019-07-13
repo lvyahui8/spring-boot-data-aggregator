@@ -1,21 +1,46 @@
-# Spring Boot Data Bean Parallel Aggregation Support
+# Spring Boot 并发数据聚合库
 
-[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
+[![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
 
-## Background and purpose
+## 背景与目的
 
-When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.
+在开发后台接口时, 为了开发效率, 我们往往习惯编写串行执行的代码, 去调用不同的接口, 即使这些接口之间并无依赖,  这使得最后开发的接口性能低下, 且数据不方便复用
 
-**This framework is designed to support parallel and data reuse while maintaining the development efficiency.**
+**此框架目的旨在保持开发效率的同时, 很方便地支持并发和数据复用**
 
-Of course, in an extremely high concurrent scenario, the parallel call interface is not that helpful for performance improvement.   However, it doesn't mean that this project is meaningless  because most applications in the Internet don't have very high concurrent traffic.
+当然, 在极端高并发的场景下,  并行调用接口对性能提升并不明显,  但不代表这个项目没有价值.  因为互联网世界的大部分应用, 并不会有非常高的并发访问量
 
-## Principle
+## 特性
 
-1. CountDownLatch + Future + Recursion
-2. In order to get the target data, it will recursively analyze and obtain the dependencies required by the data.  **There are two kinds of dependencies; one is other interface return value, the other is  input parameter.  The former needs to call other interfaces, this call will be packed as a task which is an asynchronous execution to get the result.**
+- **异步获取依赖**
 
-## Instruction
+  所有 `@DataConsumer` 定义的依赖将异步获取. 当provider方法参数中的所有依赖获取完成, 才执行provider方法
+
+- **不限级嵌套**
+
+  依赖关系支持深层嵌套. 下面的示例只有一层
+
+- **异常处理**
+
+  目前支持两种处理方式: 忽略or终止
+
+  忽略是指provider方法在执行时, 忽略抛出的异常并return null值; 终止是指一旦有一个provider方法抛出了异常, 将逐级向上抛出, 终止后续处理.
+
+  配置支持consumer级或者全局, 优先级 : consumer级 > 全局
+
+- **查询缓存**
+
+  在调用Facade的query方法的一次查询生命周期内, **方法调用结果可能复用, 只要方法签名以及传参一致, 则默认方法是幂等的, 将直接使用缓存的查询结果.**   但这个不是绝对的, 考虑到多线程的特性, 可能有时候不会使用缓存
+
+- **超时控制** 
+
+  `@DataProvider` 注解支持配置timeout, 超时将抛出中断异常 (InterruptedException),  遵循异常处理逻辑
+
+## 使用方法
+
+### 配置
 
 pom.xml
 
@@ -30,122 +55,129 @@ pom.xml
 application.properties
 
 ```
-# Specify the package to scan the annotations
+# 指定要扫描注解的包
 io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
-- `@DataProvider`:  define the data provider
-- `@DataConsumer`: define the method parameter dependency type as return the value of other interfaces, the other interface is a `@DataProvider`
-- `@InvokeParameter`: define the method parameter dependency type as the user input value
-- Spring Bean `dataBeanAggregateQueryFacade`:  query data facade API
+### 添加注解
 
-## Example
+- `@DataProvider` 定义数据提供者
+- `@DataConsumer` 定义方法参数依赖类型为其他接口返回值, 其他接口是一个`@DataProvider`
+- `@InvokeParameter` 定义方法参数依赖类型为用户输入值
 
-Developing a user summary data interface that includes the user's basic information and blog list.
+### 查询
 
-### 1. Define an "atomic" service to provide user data
+Spring Bean `DataBeanAggregateQueryFacade` 查询指定的数据的门面
 
-Use `@DataProvider` to define the interface a data provider.
+## 示例
 
-Use `@InvokeParameter` to specify the input parameters to pass.
+开发一个用户汇总数据接口, 包括用户的基础信息和博客列表
 
-**Blog list service**
+### 1. 定义提供基础数据的"原子"服务
 
-require input parameter `userId`.
+使用`@DataProvider`定义接口为数据提供者
+
+使用`@InvokeParameter`指定要传递的用户输入参数
+
+**博客列表服务**
+
+ 需要参数`userId`
 
 ```java
 @Service
 public class PostServiceImpl implements PostService {
-    @DataProvider("posts")
-    @Override
-    public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
+    @DataProvider("posts")
+    @Override
+    public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
         try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException e) {
-        }
-        Post post = new Post();
-        post.setTitle("spring data aggregate example");
-        post.setContent("No active profile set, falling back to default profiles");
-        return Collections.singletonList(post);
-    }
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            //
+        }
+        Post post = new Post();
+        post.setTitle("spring data aggregate example");
+        post.setContent("No active profile set, falling back to default profiles");
+        return Collections.singletonList(post);
+    }
 }
 ```
 
-**User basic information query service**
+**用户基础信息查询服务**
 
-require input parameter `userId`.
+需要参数`userId`
 
 ```java
 @Service
 public class UserServiceImpl implements UserService {
 
-    @DataProvider("user")
-    @Override
-    public User get(@InvokeParameter("userId") Long id) {
+    @DataProvider("user")
+    @Override
+    public User get(@InvokeParameter("userId") Long id) {
+        /* */
         try {
-            Thread.sleep(100L);
-        } catch (InterruptedException e) {
-        }
-        /* mock a user*/
-        User user = new User();
-        user.setId(id);
-        user.setEmail("lvyahui8@gmail.com");
-        user.setUsername("lvyahui8");
-        return user;
-    }
+            Thread.sleep(100L);
+        } catch (InterruptedException e) {
+            //
+        }
+        /* mock a user*/
+        User user = new User();
+        user.setId(id);
+        user.setEmail("lvyahui8@gmail.com");
+        user.setUsername("lvyahui8");
+        return user;
+    }
 }
 ```
 
-### 2. Define and implement an aggregation layer
+### 2. 定义并实现聚合层
 
-Combine `@DataProvider`  ( `@DataConsumer`  \ `@InvokeParameter` ) to achieve aggregation function
+组合`@DataProvider` \ `@DataConsumer` \ `@InvokeParameter` 实现汇聚功能
 
 ```java
 @Component
 public class UserAggregate {
-    @DataProvider("userWithPosts")
-    public User userWithPosts(
-            @DataConsumer("user") User user,
-            @DataConsumer("posts") List<Post> posts) {
-        user.setPosts(posts);
-        return user;
-    }
+    @DataProvider("userWithPosts")
+    public User userWithPosts(
+            @DataConsumer("user") User user,
+            @DataConsumer("posts") List<Post> posts) {
+        user.setPosts(posts);
+        return user;
+    }
 }
 ```
 
-### 3. Call the aggregation layer interface
+### 3. 调用聚合层接口
 
-Note that the interface of the `@DataProvider` method shouldn't to be called directly, but accessed through the facade class `DataBeanAggregateQueryFacade`.
+注解了`@DataProvider`方法的接口不需要直接调用,  而是通过门面类`DataBeanAggregateQueryFacade`访问.
 
-Specify queried data id, invoke parameters, and return type to invoke `facade.get` method
+指定要查询的data id, 查询参数, 返回值类型, 并调用`facade.get`方法即可
 
 ```java
 DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-User user = queryFacade.get(/*data id*/ "userWithPosts",
-                            /*Invoke Parameters*/
-                            Collections.singletonMap("userId",1L),
-                            User.class);
+User user = queryFacade.get(/*data id*/ "userWithPosts", 
+                            /*Invoke Parameters*/
+                            Collections.singletonMap("userId",1L), 
+                            User.class);
 Assert.notNull(user,"user not null");
 Assert.notNull(user.getPosts(),"user posts not null");
 ```
 
-**Invoke result**
+**运行结果**
 
-As you can see, `user` interface  and `posts` interface are executed by the asynchronous thread while `userWithPosts` service is executed by the calling thread.
+可以看到, user 和posts是由异步线程执行查询, 而userWithPosts是主调线程执行,  其中 
 
-- Basic user information query takes 1000ms
-- User blog list query takes 1000ms
-- **Total query takes 1005ms**
+- 基础user信息查询耗费时间 1000ms
+- 用户博客列表查询耗费时间 1000ms
+- **总的查询时间 1005ms**
 
 ```
-[aggregateTask-1] query id: user, costTime: 1000ms, resultType: User, invokeMethod: UserServiceImpl#get
-[aggregateTask-2] query id: posts, costTime: 1000ms, resultType: List, invokeMethod: PostServiceImpl#getPosts
-[           main] query id: userWithPosts, costTime: 1010ms, resultType: User, invokeMethod: UserAggregate#userWithPosts
-[           main] user.name:lvyahui8,user.posts.size:1
+[aggregateTask-1]  query id: user, costTime: 1000ms, resultType: User,  invokeMethod: UserServiceImpl#get
+[aggregateTask-2]  query id: posts, costTime: 1000ms, resultType: List,  invokeMethod: PostServiceImpl#getPosts
+[           main]  query id: userWithPosts, costTime: 1010ms, resultType: User,  invokeMethod: UserAggregate#userWithPosts
+[           main]  user.name:lvyahui8,user.posts.size:1
 ```
 
-## Contributors
+## 贡献者
 
-- Feego (lvyauhi8@gmail.com)
-
+- Feego(lvyauhi8@gmail.com)
 - Iris G
