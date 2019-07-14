@@ -92,16 +92,6 @@ public class PostServiceImpl implements PostService {
     @DataProvider("posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
-        try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException e) {
-        }
-        Post post = new Post();
-        post.setTitle("spring data aggregate example");
-        post.setContent("No active profile set, falling back to default profiles");
-        return Collections.singletonList(post);
-    }
-}
 ```
 
 **User basic information query service**
@@ -115,21 +105,33 @@ public class UserServiceImpl implements UserService {
     @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
-        try {
-            Thread.sleep(100L);
-        } catch (InterruptedException e) {
-        }
-        /* mock a user*/
-        User user = new User();
-        user.setId(id);
-        user.setEmail("lvyahui8@gmail.com");
-        user.setUsername("lvyahui8");
-        return user;
-    }
-}
 ```
 
-### 2. Define and implement an aggregation layer
+### 2. Call the aggregation interface
+
+```java
+@Autowired
+DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
+```
+
+#### Method 1: Functional call
+
+```java
+User user = dataBeanAggregateQueryFacade.get(
+     Collections.singletonMap("userId", 1L), 
+     new Function2<User, List<Post>, User>() {
+            @Override
+            public User apply(@DataConsumer("user") User user, 
+                              @DataConsumer("posts") List<Post> posts) {
+                user.setPosts(posts);
+                return user;
+            }
+     });
+Assert.notNull(user,"user not null");
+Assert.notNull(user.getPosts(),"user posts not null");
+```
+
+####  Method 2: Define and implement an aggregation layer
 
 Combine `@DataProvider`  ( `@DataConsumer`  \ `@InvokeParameter` ) to achieve aggregation function
 
@@ -145,10 +147,6 @@ public class UserAggregate {
     }
 }
 ```
-
-### 3. Call the aggregation layer interface
-
-Note that the interface of the `@DataProvider` method shouldn't to be called directly, but accessed through the facade class `DataBeanAggregateQueryFacade`.
 
 Specify queried data id, invoke parameters, and return type to invoke `facade.get` method
 

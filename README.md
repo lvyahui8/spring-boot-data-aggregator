@@ -89,17 +89,6 @@ public class PostServiceImpl implements PostService {
     @DataProvider("posts")
     @Override
     public List<Post> getPosts(@InvokeParameter("userId") Long userId) {
-        try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException e) {
-            //
-        }
-        Post post = new Post();
-        post.setTitle("spring data aggregate example");
-        post.setContent("No active profile set, falling back to default profiles");
-        return Collections.singletonList(post);
-    }
-}
 ```
 
 **用户基础信息查询服务**
@@ -113,23 +102,33 @@ public class UserServiceImpl implements UserService {
     @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {
-        /* */
-        try {
-            Thread.sleep(100L);
-        } catch (InterruptedException e) {
-            //
-        }
-        /* mock a user*/
-        User user = new User();
-        user.setId(id);
-        user.setEmail("lvyahui8@gmail.com");
-        user.setUsername("lvyahui8");
-        return user;
-    }
-}
 ```
 
-### 2. 定义并实现聚合层
+### 2. 调用聚合接口
+
+```java
+@Autowired
+DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
+```
+
+#### 方式一: 函数式调用
+
+```java
+User user = dataBeanAggregateQueryFacade.get(
+     Collections.singletonMap("userId", 1L), 
+     new Function2<User, List<Post>, User>() {
+            @Override
+            public User apply(@DataConsumer("user") User user, 
+                              @DataConsumer("posts") List<Post> posts) {
+                user.setPosts(posts);
+                return user;
+            }
+     });
+Assert.notNull(user,"user not null");
+Assert.notNull(user.getPosts(),"user posts not null");
+```
+
+#### 方式二: 定义聚合层查询
 
 组合`@DataProvider` \ `@DataConsumer` \ `@InvokeParameter` 实现汇聚功能
 
@@ -146,15 +145,10 @@ public class UserAggregate {
 }
 ```
 
-### 3. 调用聚合层接口
-
-注解了`@DataProvider`方法的接口不需要直接调用,  而是通过门面类`DataBeanAggregateQueryFacade`访问.
-
 指定要查询的data id, 查询参数, 返回值类型, 并调用`facade.get`方法即可
 
 ```java
-DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-User user = queryFacade.get(/*data id*/ "userWithPosts", 
+User user = dataBeanAggregateQueryFacade.get(/*data id*/ "userWithPosts", 
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L), 
                             User.class);
