@@ -1,5 +1,7 @@
 package io.github.lvyahui8.spring.aggregate.facade;
 
+import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -26,5 +28,40 @@ public interface DataBeanAggregateQueryFacade {
      * @throws InvocationTargetException If the data provider throws an unhandled exception, this exception will be thrown
      */
     <T> T get(String id, Map<String,Object> invokeParams, Class<T> clazz)
+            throws InterruptedException, IllegalAccessException, InvocationTargetException;
+
+    /**
+     * Used to query data. It has the following three functions
+     * 1. Automatic analysis dependence
+     * 2. Parallel access dependency
+     * 3. Automatic injection
+     *
+     * @param invokeParams Fixed parameters that need to be passed in the query process
+     * @param multipleArgumentsFunction
+     * @param <T> Return value type
+     * @return Return value
+     * @throws InterruptedException  If the thread is interrupted, this exception will be thrown
+     * @throws IllegalAccessException Thrown if the data provider cannot be executed
+     * @throws InvocationTargetException If the data provider throws an unhandled exception, this exception will be thrown
+     */
+    <T> T get(Map<String,Object> invokeParams, MultipleArgumentsFunction<T> multipleArgumentsFunction)
+            throws InterruptedException, IllegalAccessException, InvocationTargetException;
+
+    /**
+     * Used to query data. It has the following three functions
+     * 1. Automatic analysis dependence
+     * 2. Parallel access dependency
+     * 3. Automatic injection
+     *
+     * @param invokeParams Fixed parameters that need to be passed in the query process
+     * @param multipleArgumentsFunction
+     * @param timeout Timeout
+     * @param <T> Return value type
+     * @return Return value
+     * @throws InterruptedException  If the thread is interrupted, this exception will be thrown
+     * @throws IllegalAccessException Thrown if the data provider cannot be executed
+     * @throws InvocationTargetException If the data provider throws an unhandled exception, this exception will be thrown
+     */
+    <T> T get(Map<String,Object> invokeParams, MultipleArgumentsFunction<T> multipleArgumentsFunction,Long timeout)
             throws InterruptedException, IllegalAccessException, InvocationTargetException;
 }

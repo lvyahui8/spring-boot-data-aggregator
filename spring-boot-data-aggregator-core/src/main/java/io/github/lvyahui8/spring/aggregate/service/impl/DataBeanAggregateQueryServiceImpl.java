@@ -11,7 +11,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -42,40 +44,20 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
         Assert.isTrue(repository.contains(id),"id not exist");
         DataProvideDefinition provider = repository.get(id);
-        Map<String,Object> dependObjectMap = new HashMap<>(provider.getDepends().size());
+        return get(provider,invokeParams,resultType,queryCache);
+    }
+
+    @Override
+    public <T> T get(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType,
+                     Map<InvokeSignature, Object> queryCache)
+            throws InterruptedException, InvocationTargetException, IllegalAccessException {
+        Map<String,Object> dependObjectMap = null;
         if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
-            CountDownLatch stopDownLatch = new CountDownLatch(provider.getDepends().size());
-            Map<String,Future<?>> futureMap = new HashMap<>(provider.getDepends().size());
-            Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(provider.getDepends().size());
-            for (DataConsumeDefinition depend : provider.getDepends()) {
-                consumeDefinitionMap.put(depend.getId(),depend);
-                Future<?> future = executorService.submit(() -> {
-                    try {
-                        Object o = get(depend.getId(), invokeParams, depend.getClazz(),queryCache);
-                        return depend.getClazz().cast(o);
-                    } finally {
-                        stopDownLatch.countDown();
-                    }
-                });
-                futureMap.put(depend.getId(),future);
-            }
-            stopDownLatch.await(provider.getTimeout(),TimeUnit.MILLISECONDS);
-            if(! futureMap.isEmpty()){
-                for (Map.Entry<String,Future<?>> item : futureMap.entrySet()) {
-                    Future<?> future = item.getValue();
-                    Object value = null;
-                    DataConsumeDefinition consumeDefinition = consumeDefinitionMap.get(item.getKey());
-                    try {
-                        value = future.get();
-                    } catch (ExecutionException e) {
-                        if (consumeDefinition.getIgnoreException() != null ? ! consumeDefinition.getIgnoreException()
-                                : ! runtimeSettings.isIgnoreException()) {
-                            throwException(e);
-                        }
-                    }
-                    dependObjectMap.put(item.getKey(),value);
-                }
-            }
+            List<DataConsumeDefinition> consumeDefinitions = provider.getDepends();
+            Long timeout = provider.getTimeout() != null ? provider.getTimeout() : runtimeSettings.getTimeout();
+            dependObjectMap = getDependObjectMap(invokeParams, consumeDefinitions, timeout, queryCache);
+        } else {
+            dependObjectMap = Collections.emptyMap();
         }
         /* 拼凑dependObjects和invokeParams */
         Object [] args = new Object[provider.getMethod().getParameterCount()];
@@ -100,7 +82,9 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         }
         else {
             resultModel = provider.getMethod()
-                    .invoke(applicationContext.getBean(provider.getMethod().getDeclaringClass()), args);
+                    .invoke(provider.getTarget() == null
+                            ? applicationContext.getBean(provider.getMethod().getDeclaringClass())
+                            : provider.getTarget(), args);
             if(provider.isIdempotent()) {
                 /* Map 中可能不能放空value */
                 queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregatorConstant.EMPTY_MODEL);
@@ -108,6 +92,49 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         }
 
         return resultType.cast(resultModel != AggregatorConstant.EMPTY_MODEL ? resultModel : null);
+    }
+
+    @Override
+    public Map<String, Object> getDependObjectMap(Map<String, Object> invokeParams,
+                                                  List<DataConsumeDefinition> consumeDefinitions,
+                                                  Long timeout,
+                                                  Map<InvokeSignature, Object> queryCache)
+            throws InterruptedException, InvocationTargetException, IllegalAccessException {
+        Map<String, Object> dependObjectMap;
+        CountDownLatch stopDownLatch = new CountDownLatch(consumeDefinitions.size());
+        Map<String, Future<?>> futureMap = new HashMap<>(consumeDefinitions.size());
+        dependObjectMap = new HashMap<>(consumeDefinitions.size());
+        Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(consumeDefinitions.size());
+        for (DataConsumeDefinition depend : consumeDefinitions) {
+            consumeDefinitionMap.put(depend.getId(),depend);
+            Future<?> future = executorService.submit(() -> {
+                try {
+                    Object o = get(depend.getId(), invokeParams, depend.getClazz(),queryCache);
+                    return depend.getClazz().cast(o);
+                } finally {
+                    stopDownLatch.countDown();
+                }
+            });
+            futureMap.put(depend.getId(),future);
+        }
+        stopDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+        if(! futureMap.isEmpty()){
+            for (Map.Entry<String,Future<?>> item : futureMap.entrySet()) {
+                Future<?> future = item.getValue();
+                Object value = null;
+                DataConsumeDefinition consumeDefinition = consumeDefinitionMap.get(item.getKey());
+                try {
+                    value = future.get();
+                } catch (ExecutionException e) {
+                    if (consumeDefinition.getIgnoreException() != null ? ! consumeDefinition.getIgnoreException()
+                            : ! runtimeSettings.isIgnoreException()) {
+                        throwException(e);
+                    }
+                }
+                dependObjectMap.put(item.getKey(),value);
+            }
+        }
+        return dependObjectMap;
     }
 
     private void throwException(ExecutionException e)  throws InterruptedException,

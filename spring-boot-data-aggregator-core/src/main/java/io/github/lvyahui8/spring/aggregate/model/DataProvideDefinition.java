@@ -13,6 +13,7 @@ import java.util.List;
 public class DataProvideDefinition {
     private String                          id;
     private Method                          method;
+    private Object                          target;
     private Long                            timeout;
     private List<DataConsumeDefinition>     depends;
     private List<InvokeParameterDefinition> params;

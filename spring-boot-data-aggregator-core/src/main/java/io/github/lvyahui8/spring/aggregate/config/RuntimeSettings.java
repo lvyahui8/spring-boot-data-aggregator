@@ -10,4 +10,5 @@ import lombok.Data;
 public class RuntimeSettings {
     private boolean enableLogging;
     private boolean ignoreException;
+    private Long timeout;
 }
