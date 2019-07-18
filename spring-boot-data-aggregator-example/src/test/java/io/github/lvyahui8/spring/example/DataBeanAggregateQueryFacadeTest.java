@@ -4,6 +4,7 @@ import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.Function2;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.autoconfigure.BeanAggregateProperties;
+import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class DataBeanAggregateQueryFacadeTest {
                 return user;
             }
         },null);
-        log.info("query result:{} ",user);
+        Assert.notNull(user,"user never not be null!");
         try {
             user = dataBeanAggregateQueryFacade.get(singletonMap, (Function2<User, List<Post>, User>) (user1, posts) -> {
                 user1.setPosts(posts);
@@ -71,6 +72,29 @@ public class DataBeanAggregateQueryFacadeTest {
             },null);
         } catch (Exception e) {
             log.info("don't support lambda!!! eMsg:{}",e.getMessage());
+        }
+    }
+
+    @Test
+    public void testInheritableThreadLocals() throws Exception {
+        try {
+            User user = new User();
+            user.setUsername("bob");
+            user.setId(100000L);
+            ExampleAppContext.setLoggedUser(user);
+            dataBeanAggregateQueryFacade.get(null, new Function2<String,List<User>,User>() {
+                @Override
+                public User apply(@DataConsumer("loggedUsername") String loggedUsername,
+                                  @DataConsumer("loggedUserFollowers") List<User> loggedUserFollowers) {
+                    Assert.notNull(loggedUsername, "loggedUsername must be not null");
+                    Assert.notNull(loggedUserFollowers, "loggedUserFollowers must be not null");
+                    Assert.notNull(ExampleAppContext.getUsername(),"ExampleAppContext.getUsername() must be not null");
+                    log.info("everything is normal~");
+                    return null;
+                }
+            });
+        } finally {
+            ExampleAppContext.remove();
         }
     }
 }

@@ -2,6 +2,7 @@ package io.github.lvyahui8.spring.example.service.impl;
 
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
+import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.model.User;
 import io.github.lvyahui8.spring.example.service.UserService;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,11 @@ public class UserServiceImpl implements UserService {
         user.setEmail("lvyahui8@gmail.com");
         user.setUsername("lvyahui8");
         return user;
+    }
+
+    @DataProvider("loggedUsername")
+    @Override
+    public String getLoggedUsername() {
+        return ExampleAppContext.getUsername();
     }
 }
