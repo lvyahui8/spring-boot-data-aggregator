@@ -87,13 +87,13 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
                 Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
                 Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
                 for (Method method : providerMethods) {
-                    dealProvideMethod(repository, method);
+                    dealProviderMethod(repository, method);
                 }
             }
         }
     }
 
-    private void dealProvideMethod(DataProviderRepository repository, Method method) {
+    private void dealProviderMethod(DataProviderRepository repository, Method method) {
         DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
         @SuppressWarnings("ConstantConditions")
         String dataId = beanProvider.id();
