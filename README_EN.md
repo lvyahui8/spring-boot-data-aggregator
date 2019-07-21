@@ -101,7 +101,6 @@ require input parameter `userId`.
 ```java
 @Service
 public class UserServiceImpl implements UserService {
-
     @DataProvider("user")
     @Override
     public User get(@InvokeParameter("userId") Long id) {

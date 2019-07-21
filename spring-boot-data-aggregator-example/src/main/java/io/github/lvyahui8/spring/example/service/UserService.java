@@ -13,4 +13,11 @@ public interface UserService {
      * @return
      */
     User get(Long id);
+
+    /**
+     * 获取已登录用户用户名
+     *
+     * @return xx
+     */
+    String getLoggedUsername();
 }

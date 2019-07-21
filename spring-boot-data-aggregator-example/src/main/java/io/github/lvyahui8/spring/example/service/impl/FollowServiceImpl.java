@@ -2,11 +2,13 @@ package io.github.lvyahui8.spring.example.service.impl;
 
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
+import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.model.User;
 import io.github.lvyahui8.spring.example.service.FollowService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,5 +31,16 @@ public class FollowServiceImpl implements FollowService {
             users.add(user);
         }
         return users;
+    }
+
+    @DataProvider("loggedUserFollowers")
+    @Override
+    public List<User> getLoggedUserFollowers() {
+        Long userId = ExampleAppContext.getUserId();
+        String username = ExampleAppContext.getUsername();
+        User follower = new User();
+        follower.setId(userId + 10000L);
+        follower.setUsername(username + "_follower");
+        return Collections.singletonList(follower);
     }
 }

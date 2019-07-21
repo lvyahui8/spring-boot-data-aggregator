@@ -37,7 +37,7 @@ public interface DataBeanAggregateQueryFacade {
      * 3. Automatic injection
      *
      * @param invokeParams Fixed parameters that need to be passed in the query process
-     * @param multipleArgumentsFunction
+     * @param multipleArgumentsFunction Multiple arguments function
      * @param <T> Return value type
      * @return Return value
      * @throws InterruptedException  If the thread is interrupted, this exception will be thrown
@@ -54,7 +54,7 @@ public interface DataBeanAggregateQueryFacade {
      * 3. Automatic injection
      *
      * @param invokeParams Fixed parameters that need to be passed in the query process
-     * @param multipleArgumentsFunction
+     * @param multipleArgumentsFunction Multiple arguments function
      * @param timeout Timeout
      * @param <T> Return value type
      * @return Return value
