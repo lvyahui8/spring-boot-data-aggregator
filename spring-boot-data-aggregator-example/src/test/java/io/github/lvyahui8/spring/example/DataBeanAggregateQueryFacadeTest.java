@@ -2,9 +2,12 @@ package io.github.lvyahui8.spring.example;
 
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.Function2;
+import io.github.lvyahui8.spring.aggregate.func.Function3;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.autoconfigure.BeanAggregateProperties;
 import io.github.lvyahui8.spring.example.context.ExampleAppContext;
+import io.github.lvyahui8.spring.example.context.RequestContext;
+import io.github.lvyahui8.spring.example.model.Category;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +98,27 @@ public class DataBeanAggregateQueryFacadeTest {
             });
         } finally {
             ExampleAppContext.remove();
+        }
+    }
+
+    @Test
+    public void testThreadLocal() throws Exception {
+        try {
+            RequestContext.setTenantId(10000L);
+            Object result = dataBeanAggregateQueryFacade.get(null,
+                    new Function3<List<Category>, List<Post>, List<User>, Object>() {
+                @Override
+                public Object apply(
+                        @DataConsumer("topMenu") List<Category> categories,
+                        @DataConsumer("postList") List<Post> posts,
+                        @DataConsumer("allFollowers") List<User> users) {
+                    return new Object[] {
+                            categories,posts,users
+                    };
+                }
+            });
+        } finally {
+            RequestContext.removeTenantId();
         }
     }
 }
