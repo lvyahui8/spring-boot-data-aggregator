@@ -1,7 +1,7 @@
 package io.github.lvyahui8.spring.aggregate.service.impl;
 
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
-import io.github.lvyahui8.spring.aggregate.consts.AggregatorConstant;
+import io.github.lvyahui8.spring.aggregate.consts.AggregationConstant;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
@@ -87,11 +87,11 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
                             : provider.getTarget(), args);
             if(provider.isIdempotent()) {
                 /* Map 中可能不能放空value */
-                queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregatorConstant.EMPTY_MODEL);
+                queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregationConstant.EMPTY_MODEL);
             }
         }
 
-        return resultType.cast(resultModel != AggregatorConstant.EMPTY_MODEL ? resultModel : null);
+        return resultType.cast(resultModel != AggregationConstant.EMPTY_MODEL ? resultModel : null);
     }
 
     @Override
