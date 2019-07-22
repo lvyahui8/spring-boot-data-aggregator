@@ -1,6 +1,6 @@
 package io.github.lvyahui8.spring.aggregate.interceptor;
 
-import io.github.lvyahui8.spring.aggregate.context.AggregateContext;
+import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 
 /**
@@ -13,43 +13,43 @@ public interface AbstractAggregateQueryInterceptor {
     /**
      * 查询正常提交, Context已经创建
      *
-     * @param aggregateContext 查询上下文
+     * @param aggregationContext 查询上下文
      * @return 返回为true才继续执行
      */
-    boolean querySubmitted(AggregateContext aggregateContext) ;
+    boolean querySubmitted(AggregationContext aggregationContext) ;
 
     /**
-     * 每个Provider方法执行前, 将调用此方法
+     * 每个Provider方法执行前, 将调用此方法. 存在并发调用
      *
-     * @param aggregateContext 查询上下文
+     * @param aggregationContext 查询上下文
      * @param provideDefinition 将被执行的Provider
      * @return  返回为true才继续执行
      */
-    boolean queryBefore(AggregateContext aggregateContext, DataProvideDefinition provideDefinition);
+    boolean queryBefore(AggregationContext aggregationContext, DataProvideDefinition provideDefinition);
 
     /**
-     * 每个Provider方法执行成功之后, 调用此方法
+     * 每个Provider方法执行成功之后, 调用此方法. 存在并发调用
      *
-     * @param aggregateContext 查询上下文
+     * @param aggregationContext 查询上下文
      * @param provideDefinition 被执行的Provider
      * @param result 查询结果
      * @return 返回结果, 如不修改不, 请直接返回参数中的result
      */
-    Object queryAfter(AggregateContext aggregateContext,DataProvideDefinition provideDefinition,Object result);
+    Object queryAfter(AggregationContext aggregationContext, DataProvideDefinition provideDefinition, Object result);
 
     /**
-     * 每个Provider执行时, 如果抛出异常, 将调用此方法
+     * 每个Provider执行时, 如果抛出异常, 将调用此方法. 存在并发调用
      *
-     * @param aggregateContext  查询上下文
+     * @param aggregationContext  查询上下文
      * @param provideDefinition 被执行的Provider
      * @param e Provider抛出的异常
      */
-    void exceptionHandle(AggregateContext aggregateContext,DataProvideDefinition provideDefinition,Exception e);
+    void exceptionHandle(AggregationContext aggregationContext, DataProvideDefinition provideDefinition, Exception e);
 
     /**
      * 一次查询全部完成.
      *
-     * @param aggregateContext 查询上下文
+     * @param aggregationContext 查询上下文
      */
-    void queryFinished(AggregateContext aggregateContext);
+    void queryFinished(AggregationContext aggregationContext);
 }
