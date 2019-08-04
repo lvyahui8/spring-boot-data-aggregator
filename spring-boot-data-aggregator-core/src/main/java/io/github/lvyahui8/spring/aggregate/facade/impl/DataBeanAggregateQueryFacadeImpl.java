@@ -1,6 +1,5 @@
 package io.github.lvyahui8.spring.aggregate.facade.impl;
 
-import io.github.lvyahui8.spring.aggregate.consts.AggregationConstant;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
@@ -13,7 +12,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -35,8 +33,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAggregateQueryService.get(id,invokeParams,clazz,
-                new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY));
+        return dataBeanAggregateQueryService.get(id,invokeParams,clazz);
     }
 
     @Override
@@ -74,8 +71,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         }
         try {
             @SuppressWarnings("unchecked")
-            T ret = (T) dataBeanAggregateQueryService.get(provider, invokeParams, applyMethod.getReturnType(),
-                    new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY));
+            T ret = (T) dataBeanAggregateQueryService.get(provider, invokeParams, applyMethod.getReturnType());
 
             return ret;
         } finally {

@@ -15,7 +15,9 @@ public class DataProviderRepositoryImpl implements DataProviderRepository {
     private final ConcurrentHashMap<String,DataProvideDefinition> providerMap = new ConcurrentHashMap<>();
 
     @Override
-    public void put(String id, DataProvideDefinition dataProvideDefinition) {
+    public void put(DataProvideDefinition dataProvideDefinition) {
+        Assert.notNull(dataProvideDefinition.getId(),"data provider id must be not null!");
+        String id = dataProvideDefinition.getId();
         Assert.isTrue(! providerMap.containsKey(id),"data provider exist! id: " + id);
         providerMap.put(id, dataProvideDefinition);
     }

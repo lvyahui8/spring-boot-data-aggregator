@@ -3,6 +3,8 @@ package io.github.lvyahui8.spring.autoconfigure;
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFacadeImpl;
+import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
+import io.github.lvyahui8.spring.aggregate.interceptor.impl.AggregateQueryInterceptorChainImpl;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.repository.impl.DataProviderRepositoryImpl;
@@ -15,6 +17,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -54,22 +57,52 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnMissingBean
-    public DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade() {
-        return new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService());
+    public DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade(
+            @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
+        return new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DataBeanAggregateQueryService dataBeanAggregateQueryService () {
-        DataProviderRepository repository = new DataProviderRepositoryImpl();
-        scanProviders(repository);
-        DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl(repository);
-        service.setRuntimeSettings(createRuntimeSettings());
+    public DataBeanAggregateQueryService dataBeanAggregateQueryService (
+            @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
+        if(properties.getBasePackages() != null) {
+            for (String basePackage : properties.getBasePackages()) {
+                Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
+                Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
+                for (Method method : providerMethods) {
+                    DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
+                    @SuppressWarnings("ConstantConditions")
+                    String dataId = beanProvider.id();
+                    Assert.isTrue(Modifier.isPublic(method.getModifiers()),"data provider method must be public");
+                    Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
+                    DataProvideDefinition provider = DefinitionUtils.getProvideDefinition(method);
+                    provider.setId(dataId);
+                    provider.setIdempotent(beanProvider.idempotent());
+                    provider.setTimeout(beanProvider.timeout() > 0 ? beanProvider.timeout() : properties.getDefaultTimeout());
+                    dataProviderRepository.put(provider);
+                }
+            }
+        }
+        DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl();
+        RuntimeSettings runtimeSettings = new RuntimeSettings();
+        runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
+                ? properties.getEnableLogging() : false);
+        runtimeSettings.setIgnoreException(properties.isIgnoreException());
+        runtimeSettings.setTimeout(properties.getDefaultTimeout());
+        service.setRepository(dataProviderRepository);
+        service.setRuntimeSettings(runtimeSettings);
         service.setExecutorService(aggregateExecutorService());
+        service.setInterceptorChain(aggregateQueryInterceptorChain());
         service.setApplicationContext(applicationContext);
         return service;
     }
 
+    /**
+     * 允许用户自定义线程池
+     *
+     * @return
+     */
     @Bean(name = "aggregateExecutorService")
     @ConditionalOnMissingBean(name = "aggregateExecutorService")
     public ExecutorService aggregateExecutorService() {
@@ -81,39 +114,21 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
                 new CustomizableThreadFactory(properties.getThreadPrefix()));
     }
 
-    private void scanProviders(DataProviderRepository repository) {
-        if(properties.getBasePackages() != null) {
-            for (String basePackage : properties.getBasePackages()) {
-                Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
-                Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
-                for (Method method : providerMethods) {
-                    dealProviderMethod(repository, method);
-                }
-            }
-        }
-    }
-
-    private void dealProviderMethod(DataProviderRepository repository, Method method) {
-        DataProvider beanProvider = AnnotationUtils.findAnnotation(method, DataProvider.class);
-        @SuppressWarnings("ConstantConditions")
-        String dataId = beanProvider.id();
-        Assert.isTrue(Modifier.isPublic(method.getModifiers()),"data provider method must be public");
-        Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
-        DataProvideDefinition provider = DefinitionUtils.getProvideDefinition(method);
-        provider.setId(dataId);
-        provider.setIdempotent(beanProvider.idempotent());
-        provider.setTimeout(beanProvider.timeout() > 0 ? beanProvider.timeout() : properties.getDefaultTimeout());
-        repository.put(dataId,provider);
+    /**
+     * 允许用户自定义provider存储
+     *
+     * @return
+     */
+    @Bean(name = "dataProviderRepository")
+    @ConditionalOnMissingBean(DataProviderRepository.class)
+    public DataProviderRepository dataProviderRepository() {
+        return new DataProviderRepositoryImpl();
     }
 
 
-    private RuntimeSettings createRuntimeSettings() {
-        RuntimeSettings runtimeSettings = new RuntimeSettings();
-        runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
-                ? properties.getEnableLogging() : false);
-        runtimeSettings.setIgnoreException(properties.isIgnoreException());
-        runtimeSettings.setTimeout(properties.getDefaultTimeout());
-        return runtimeSettings;
+    @Bean(name = "aggregateQueryInterceptorChain")
+    @ConditionalOnMissingBean(AggregateQueryInterceptorChain.class)
+    public AggregateQueryInterceptorChain aggregateQueryInterceptorChain() {
+        return new AggregateQueryInterceptorChainImpl();
     }
-
 }
