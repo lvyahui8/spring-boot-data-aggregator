@@ -7,6 +7,7 @@ import io.github.lvyahui8.spring.annotation.DataConsumer;
 import io.github.lvyahui8.spring.autoconfigure.BeanAggregateProperties;
 import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.context.RequestContext;
+import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import io.github.lvyahui8.spring.example.model.Category;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
@@ -31,11 +32,43 @@ import java.util.Map;
 @Slf4j
 public class DataBeanAggregateQueryFacadeTest {
 
+    private static final int NUM = 100;
+
     @Autowired
     private DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
 
     @Autowired
     private BeanAggregateProperties beanAggregateProperties;
+
+    @Autowired
+    UserQueryFacade userQueryFacade;
+
+    @Test
+    public void testSample() throws Exception {
+        {
+            User user = dataBeanAggregateQueryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
+            Assert.notNull(user,"user not null");
+            Assert.notNull(user.getPosts(),"user posts not null");
+            log.info("user.name:{},user.posts.size:{}",
+                    user.getUsername(),user.getPosts().size());
+        }
+
+        log.info("------------------------------------------------------------------");
+
+        {
+            User user = userQueryFacade.getUserFinal(1L);
+            Assert.notNull(user.getFollowers(),"user followers not null");
+        }
+
+        log.info("------------------------------------------------------------------");
+
+        {
+            for (int i = 0; i < NUM; i ++) {
+                String s = dataBeanAggregateQueryFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
+                Assert.isTrue(org.apache.commons.lang3.StringUtils.isNotEmpty(s),"s  not null");
+            }
+        }
+    }
 
     @Test
     public void testExceptionProcessing() throws Exception {
@@ -46,15 +79,12 @@ public class DataBeanAggregateQueryFacadeTest {
                         Collections.singletonMap("userId", 1L), User.class);
             } catch (Exception e) {
                 log.info("default settings is SUSPEND, catch an exception: {}",e.getMessage(),e);
-                success = true;
             }
         } else {
             User user = dataBeanAggregateQueryFacade.get("userWithPosts",
                     Collections.singletonMap("userId", 1L), User.class);
-            System.out.println(user);
-            success = true;
+            Assert.notNull(user,"user must be not null!");
         }
-        Assert.isTrue(success,"exception handle success");
     }
 
     @Test

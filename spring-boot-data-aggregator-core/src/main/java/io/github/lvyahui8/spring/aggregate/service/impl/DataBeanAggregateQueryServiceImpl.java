@@ -2,13 +2,14 @@ package io.github.lvyahui8.spring.aggregate.service.impl;
 
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.consts.AggregationConstant;
+import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
+import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -24,7 +25,8 @@ import java.util.concurrent.*;
 @Slf4j
 public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQueryService {
 
-    private final DataProviderRepository repository;
+    @Setter
+    private DataProviderRepository repository;
 
     @Setter
     private ApplicationContext applicationContext;
@@ -35,70 +37,92 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
     @Setter
     private RuntimeSettings runtimeSettings;
 
-    public DataBeanAggregateQueryServiceImpl(DataProviderRepository repository) {
-        this.repository = repository;
+    @Setter
+    private AggregateQueryInterceptorChain interceptorChain;
+
+    private AggregationContext initQueryContext(DataProvideDefinition rootProvider, Map<InvokeSignature,Object> queryCache) {
+        AggregationContext aggregationContext = new AggregationContext();
+        aggregationContext.setRootThread(Thread.currentThread());
+        aggregationContext.setRootProvideDefinition(rootProvider);
+        aggregationContext.setCacheMap(queryCache);
+        return aggregationContext;
     }
 
     @Override
-    public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType,final Map<InvokeSignature,Object> queryCache)
+    public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType)
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
-        Assert.isTrue(repository.contains(id),"id not exist");
-        DataProvideDefinition provider = repository.get(id);
-        return get(provider,invokeParams,resultType,queryCache);
+        return get(repository.get(id),invokeParams,resultType);
     }
 
     @Override
-    public <T> T get(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType,
-                     Map<InvokeSignature, Object> queryCache)
+    public <T> T get(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType)
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
+        Map<InvokeSignature, Object> queryCache = new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY);
+        AggregationContext aggregationContext = initQueryContext(provider, queryCache);
+        interceptorChain.applyQuerySubmitted(aggregationContext);
+        try {
+            return innerGet(provider,invokeParams,resultType,aggregationContext);
+        } finally {
+            interceptorChain.applyQueryFinished(aggregationContext);
+        }
+    }
+
+    private  <T> T innerGet(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType,
+                     AggregationContext context)
+            throws InterruptedException, InvocationTargetException, IllegalAccessException{
         Map<String,Object> dependObjectMap = null;
-        if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
-            List<DataConsumeDefinition> consumeDefinitions = provider.getDepends();
-            Long timeout = provider.getTimeout() != null ? provider.getTimeout() : runtimeSettings.getTimeout();
-            dependObjectMap = getDependObjectMap(invokeParams, consumeDefinitions, timeout, queryCache);
-        } else {
-            dependObjectMap = Collections.emptyMap();
-        }
-        /* 拼凑dependObjects和invokeParams */
-        Object [] args = new Object[provider.getMethod().getParameterCount()];
-        for (int i = 0 ; i < provider.getMethodArgs().size(); i ++) {
-            MethodArg methodArg = provider.getMethodArgs().get(i);
-            if (methodArg.getDependType().equals(DependType.OTHER_MODEL)) {
-                args[i] = dependObjectMap.get(methodArg.getAnnotationKey());
+        try {
+            interceptorChain.applyQueryBefore(context,provider);
+            if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
+                List<DataConsumeDefinition> consumeDefinitions = provider.getDepends();
+                Long timeout = provider.getTimeout() != null ? provider.getTimeout() : runtimeSettings.getTimeout();
+                dependObjectMap = getDependObjectMap(invokeParams, consumeDefinitions, timeout, context);
             } else {
-                args[i] = invokeParams.get(methodArg.getAnnotationKey());
+                dependObjectMap = Collections.emptyMap();
             }
-            if (args[i] != null && ! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
-                throw new IllegalArgumentException("param type not match, param:"
-                        + methodArg.getParameter().getName());
+            /* 拼凑dependObjects和invokeParams */
+            Object [] args = new Object[provider.getMethod().getParameterCount()];
+            for (int i = 0 ; i < provider.getMethodArgs().size(); i ++) {
+                MethodArg methodArg = provider.getMethodArgs().get(i);
+                if (methodArg.getDependType().equals(DependType.OTHER_MODEL)) {
+                    args[i] = dependObjectMap.get(methodArg.getAnnotationKey());
+                } else {
+                    args[i] = invokeParams.get(methodArg.getAnnotationKey());
+                }
+                if (args[i] != null && ! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
+                    throw new IllegalArgumentException("param type not match, param:"
+                            + methodArg.getParameter().getName());
+                }
             }
-        }
-
-        /* 如果调用方法是幂等的, 那么当方法签名和方法参数完全一致时, 可以直接使用缓存结果 */
-        InvokeSignature invokeSignature = new InvokeSignature(provider.getMethod(),args);
-        Object resultModel;
-        if(provider.isIdempotent() && queryCache.containsKey(invokeSignature)) {
-            resultModel = queryCache.get(invokeSignature);
-        }
-        else {
-            resultModel = provider.getMethod()
-                    .invoke(provider.getTarget() == null
-                            ? applicationContext.getBean(provider.getMethod().getDeclaringClass())
-                            : provider.getTarget(), args);
-            if(provider.isIdempotent()) {
-                /* Map 中可能不能放空value */
-                queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregationConstant.EMPTY_MODEL);
+            Map<InvokeSignature, Object> queryCache = context.getCacheMap();
+            /* 如果调用方法是幂等的, 那么当方法签名和方法参数完全一致时, 可以直接使用缓存结果 */
+            InvokeSignature invokeSignature = new InvokeSignature(provider.getMethod(),args);
+            Object resultModel;
+            if(provider.isIdempotent() && queryCache.containsKey(invokeSignature)) {
+                resultModel = queryCache.get(invokeSignature);
             }
+            else {
+                resultModel = provider.getMethod()
+                        .invoke(provider.getTarget() == null
+                                ? applicationContext.getBean(provider.getMethod().getDeclaringClass())
+                                : provider.getTarget(), args);
+                if(provider.isIdempotent()) {
+                    /* Map 中可能不能放空value */
+                    queryCache.put(invokeSignature,resultModel != null ? resultModel : AggregationConstant.EMPTY_MODEL);
+                }
+            }
+            Object result = resultModel != AggregationConstant.EMPTY_MODEL ? resultModel : null;
+            return resultType.cast(interceptorChain.applyQueryAfter(context,provider,result));
+        } catch (Exception e) {
+            interceptorChain.applyExceptionHandle(context,provider,e);
+            return null;
         }
-
-        return resultType.cast(resultModel != AggregationConstant.EMPTY_MODEL ? resultModel : null);
     }
 
-    @Override
-    public Map<String, Object> getDependObjectMap(Map<String, Object> invokeParams,
+    private Map<String, Object> getDependObjectMap(Map<String, Object> invokeParams,
                                                   List<DataConsumeDefinition> consumeDefinitions,
                                                   Long timeout,
-                                                  Map<InvokeSignature, Object> queryCache)
+                                                  AggregationContext context)
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
         Map<String, Object> dependObjectMap;
         CountDownLatch stopDownLatch = new CountDownLatch(consumeDefinitions.size());
@@ -109,7 +133,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             consumeDefinitionMap.put(depend.getId(),depend);
             Future<?> future = executorService.submit(() -> {
                 try {
-                    Object o = get(depend.getId(), invokeParams, depend.getClazz(),queryCache);
+                    Object o = innerGet(repository.get(depend.getId()),invokeParams, depend.getClazz(),context);
                     return depend.getClazz().cast(o);
                 } finally {
                     stopDownLatch.countDown();

@@ -9,7 +9,7 @@ import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/7/21 22:28
  */
-public interface AbstractAggregateQueryInterceptor {
+public interface AggregateQueryInterceptor {
     /**
      * 查询正常提交, Context已经创建
      *
@@ -23,9 +23,8 @@ public interface AbstractAggregateQueryInterceptor {
      *
      * @param aggregationContext 查询上下文
      * @param provideDefinition 将被执行的Provider
-     * @return  返回为true才继续执行
      */
-    boolean queryBefore(AggregationContext aggregationContext, DataProvideDefinition provideDefinition);
+    void queryBefore(AggregationContext aggregationContext, DataProvideDefinition provideDefinition);
 
     /**
      * 每个Provider方法执行成功之后, 调用此方法. 存在并发调用
