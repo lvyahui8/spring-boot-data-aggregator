@@ -1,5 +1,6 @@
 # Spring Boot 并发数据聚合库
 
+[![Build Status](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator.svg?branch=develop)](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
