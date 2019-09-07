@@ -43,7 +43,7 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
 ## Getting Started
 
-### Configuration
+### 1. Configuration
 
 pom.xml
 
@@ -62,7 +62,7 @@ application.properties
 io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
-### Annotation
+### 2. Annotation
 
 - `@DataProvider`:  define the data provider
 
@@ -70,7 +70,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 
 - `@InvokeParameter`: define the method parameter dependency type as the user input value
 
-### Query
+### 3. Query
 
 Spring Bean `dataBeanAggregateQueryFacade` query data facade API
 

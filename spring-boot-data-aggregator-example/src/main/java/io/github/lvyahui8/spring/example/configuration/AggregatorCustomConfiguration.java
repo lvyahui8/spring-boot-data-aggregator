@@ -1,9 +1,5 @@
 package io.github.lvyahui8.spring.example.configuration;
 
-import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
-import io.github.lvyahui8.spring.aggregate.interceptor.impl.AggregateQueryInterceptorChainImpl;
-import io.github.lvyahui8.spring.example.interceptor.SampleAggregateQueryInterceptor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -29,19 +25,5 @@ public class AggregatorCustomConfiguration {
                 2L, TimeUnit.HOURS,
                 new LinkedBlockingDeque<>(1024),
                 new CustomizableThreadFactory("example-async"));
-    }
-
-    /**
-     * 自定义拦截器处理链
-     *
-     * @param sampleAggregateQueryInterceptor
-     * @return
-     */
-    @Bean(name = "aggregateQueryInterceptorChain")
-    public AggregateQueryInterceptorChain aggregateQueryInterceptorChain(
-            @Qualifier("sampleAggregateQueryInterceptor") SampleAggregateQueryInterceptor sampleAggregateQueryInterceptor) {
-        AggregateQueryInterceptorChainImpl aggregateQueryInterceptorChain = new AggregateQueryInterceptorChainImpl();
-        aggregateQueryInterceptorChain.addInterceptor(sampleAggregateQueryInterceptor);
-        return aggregateQueryInterceptorChain;
     }
 }

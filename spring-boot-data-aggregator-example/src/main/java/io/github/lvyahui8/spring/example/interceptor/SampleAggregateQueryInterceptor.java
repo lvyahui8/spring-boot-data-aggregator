@@ -4,6 +4,7 @@ import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptor;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
  * @since 2019/8/4 17:24
  */
 @Component
+@Order(2)
 @Slf4j
 public class SampleAggregateQueryInterceptor implements AggregateQueryInterceptor {
     @Override
