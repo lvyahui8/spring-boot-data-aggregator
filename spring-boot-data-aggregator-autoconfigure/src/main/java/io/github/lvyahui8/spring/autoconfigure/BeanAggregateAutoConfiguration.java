@@ -3,6 +3,7 @@ package io.github.lvyahui8.spring.autoconfigure;
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFacadeImpl;
+import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptor;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.interceptor.impl.AggregateQueryInterceptorChainImpl;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
@@ -24,14 +25,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -104,7 +107,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
      * @return
      */
     @Bean(name = "aggregateExecutorService")
-    @ConditionalOnMissingBean(name = "aggregateExecutorService")
+    @ConditionalOnMissingBean(name = "aggregateExecutorService",value=ExecutorService.class)
     public ExecutorService aggregateExecutorService() {
         return new ThreadPoolExecutor(
                 properties.getThreadNumber(),
@@ -129,6 +132,24 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     @Bean(name = "aggregateQueryInterceptorChain")
     @ConditionalOnMissingBean(AggregateQueryInterceptorChain.class)
     public AggregateQueryInterceptorChain aggregateQueryInterceptorChain() {
-        return new AggregateQueryInterceptorChainImpl();
+        Map<String, AggregateQueryInterceptor> interceptorMap = applicationContext.getBeansOfType(AggregateQueryInterceptor.class);
+        AggregateQueryInterceptorChainImpl interceptorChain = new AggregateQueryInterceptorChainImpl();
+        if(interceptorMap != null  && ! interceptorMap.isEmpty()) {
+            List<AggregateQueryInterceptor> interceptors = new ArrayList<>(interceptorMap.values());
+            interceptors.sort(new Comparator<AggregateQueryInterceptor>() {
+                @Override
+                public int compare(AggregateQueryInterceptor o1, AggregateQueryInterceptor o2) {
+                    Order order1 = o1.getClass().getAnnotation(Order.class);
+                    Order order2 = o2.getClass().getAnnotation(Order.class);
+                    int oi1 = order1 == null ? Ordered.LOWEST_PRECEDENCE :  order1.value();
+                    int oi2 = order2 == null ?  Ordered.LOWEST_PRECEDENCE : order2.value();
+                    return oi1 - oi2;
+                }
+            });
+            for (AggregateQueryInterceptor interceptor : interceptors) {
+                interceptorChain.addInterceptor(interceptor);
+            }
+        }
+        return interceptorChain;
     }
 }
