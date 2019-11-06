@@ -1,9 +1,12 @@
 package io.github.lvyahui8.spring.example;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.Function2;
 import io.github.lvyahui8.spring.aggregate.func.Function3;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
+import io.github.lvyahui8.spring.annotation.DynamicParameter;
 import io.github.lvyahui8.spring.autoconfigure.BeanAggregateProperties;
 import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.context.RequestContext;
@@ -151,4 +154,28 @@ public class DataBeanAggregateQueryFacadeTest {
             RequestContext.removeTenantId();
         }
     }
+
+    @Test
+    public void testDynamicParameter() throws Exception {
+        ImmutableMap<String, Object> params = ImmutableMap.<String, Object>builder()
+                .put("userA_Id", 1)
+                .put("userB_Id", 2)
+                .put("userC_Id", 3).build();
+        Object specialUserCollection = dataBeanAggregateQueryFacade.get(params,
+                new Function3<User,User,User,Object>() {
+                    @Override
+                    public Object apply(
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userA_Id")}) User userA,
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userB_Id")}) User userB,
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userC_Id")}) User userC) {
+                        return Lists.newArrayList(userA,userB,userC);
+                    }
+                });
+        System.out.println(specialUserCollection instanceof List);
+        System.out.println(specialUserCollection);
+    }
+
 }

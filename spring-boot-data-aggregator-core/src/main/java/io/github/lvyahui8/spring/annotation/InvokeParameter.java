@@ -1,5 +1,7 @@
 package io.github.lvyahui8.spring.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
@@ -15,5 +17,12 @@ public @interface InvokeParameter {
     /**
      * Manually passed parameter key
      */
-    String value();
+    @AliasFor("key")
+    String value() default "";
+
+    /**
+     * same as value();
+     */
+    @AliasFor("value")
+    String key() default "";
 }
