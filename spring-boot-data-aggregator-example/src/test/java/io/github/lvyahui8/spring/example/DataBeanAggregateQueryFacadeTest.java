@@ -158,9 +158,9 @@ public class DataBeanAggregateQueryFacadeTest {
     @Test
     public void testDynamicParameter() throws Exception {
         ImmutableMap<String, Object> params = ImmutableMap.<String, Object>builder()
-                .put("userA_Id", 1)
-                .put("userB_Id", 2)
-                .put("userC_Id", 3).build();
+                .put("userA_Id", 1L)
+                .put("userB_Id", 2L)
+                .put("userC_Id", 3L).build();
         Object specialUserCollection = dataBeanAggregateQueryFacade.get(params,
                 new Function3<User,User,User,Object>() {
                     @Override
