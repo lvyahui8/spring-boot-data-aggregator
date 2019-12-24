@@ -49,4 +49,17 @@ public class CategoryServiceImpl implements CategoryService {
         return Stream.of("feego", "figo", "sam").map(item -> item+r.nextInt(1000))
                 .collect(Collectors.toList());
     }
+
+
+    /// @DataProvider("cycleDependA")
+    @Override
+    public Object cycleDependA(@DataConsumer("cycleDependB") Object dependB) {
+        return null;
+    }
+
+    /// @DataProvider("cycleDependB")
+    @Override
+    public Object cycleDependB(@DataConsumer("cycleDependA") Object dependA) {
+        return null;
+    }
 }

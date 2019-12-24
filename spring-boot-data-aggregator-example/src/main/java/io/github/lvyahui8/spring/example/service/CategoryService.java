@@ -14,4 +14,8 @@ public interface CategoryService {
     String getCategoryTitle(Category category, List<String> topCategoryNames);
 
     List<String> getTopCategoryNames();
+
+    Object cycleDependA(Object dependB);
+
+    Object cycleDependB(Object dependA);
 }
