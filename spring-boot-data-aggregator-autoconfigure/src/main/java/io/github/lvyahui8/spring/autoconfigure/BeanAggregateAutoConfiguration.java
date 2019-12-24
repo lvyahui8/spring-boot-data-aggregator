@@ -69,7 +69,6 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
     private void checkCycle(Map<String,Set<String>> graphAdjMap) {
         Map<String,Integer> visitStatusMap = new HashMap<>(graphAdjMap.size() * 2);
-        Stack<String> stack = new Stack<>();
         for (Map.Entry<String, Set<String>> item : graphAdjMap.entrySet()) {
             if (visitStatusMap.containsKey(item.getKey())) {
                 continue;
