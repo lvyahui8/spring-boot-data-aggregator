@@ -1,5 +1,7 @@
 package io.github.lvyahui8.spring.autoconfigure;
 
+import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
+import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskAdapter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -38,4 +40,8 @@ public class BeanAggregateProperties {
      * Ignore exception thrown by asynchronous execution, method returns null value
      */
     private boolean ignoreException = false;
+    /**
+     * Async task implement
+     */
+    private Class<? extends AbstractAsyncQueryTask> asyncTaskClass = AsyncQueryTaskAdapter.class;
 }

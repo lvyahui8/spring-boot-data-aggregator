@@ -6,6 +6,7 @@ import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
+import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,9 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
 
     @Setter
     private AggregateQueryInterceptorChain interceptorChain;
+
+    @Setter
+    private Class<? extends AbstractAsyncQueryTask> taskClazz ;
 
     private AggregationContext initQueryContext(DataProvideDefinition rootProvider, Map<InvokeSignature,Object> queryCache) {
         AggregationContext aggregationContext = new AggregationContext();
@@ -139,7 +143,13 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(consumeDefinitions.size());
         for (DataConsumeDefinition depend : consumeDefinitions) {
             consumeDefinitionMap.put(depend.getId(),depend);
-            Future<?> future = executorService.submit(() -> {
+            AbstractAsyncQueryTask queryTask = null;
+            try {
+                queryTask = taskClazz.newInstance();
+            } catch (InstantiationException ignored) {
+                //
+            }
+            queryTask.setCallable(() -> {
                 try {
                     Object o = innerGet(repository.get(depend.getId()),invokeParams, depend.getClazz(),context,depend);
                     return depend.getClazz().cast(o);
@@ -147,6 +157,8 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
                     stopDownLatch.countDown();
                 }
             });
+            queryTask.setTaskFromThread(Thread.currentThread());
+            Future<?> future = executorService.submit(queryTask);
             futureMap.put(depend.getId() + "_" + depend.getOriginalParameterName(),future);
         }
         stopDownLatch.await(timeout, TimeUnit.MILLISECONDS);

@@ -136,6 +136,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         service.setRuntimeSettings(runtimeSettings);
         service.setExecutorService(aggregateExecutorService());
         service.setInterceptorChain(aggregateQueryInterceptorChain());
+        service.setTaskClazz(properties.getAsyncTaskClass());
         service.setApplicationContext(applicationContext);
         return service;
     }
