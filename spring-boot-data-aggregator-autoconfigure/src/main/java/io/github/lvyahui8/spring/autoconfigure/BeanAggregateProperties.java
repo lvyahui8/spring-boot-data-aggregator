@@ -1,5 +1,7 @@
 package io.github.lvyahui8.spring.autoconfigure;
 
+import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
+import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapperAdapter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -13,11 +15,11 @@ public class BeanAggregateProperties {
     /**
      * Packages that need to scan for aggregated annotations
      */
-    private String[] basePackages;
+    private String[]                               basePackages;
     /**
      * Thread name prefix for asynchronous threads
      */
-    private String   threadPrefix    = "aggregateTask-";
+    private String                          threadPrefix    = "aggregateTask-";
     /**
      * Thread size of the asynchronous thread pool
      */
@@ -25,17 +27,21 @@ public class BeanAggregateProperties {
     /**
      * The size of the queue that holds the task to be executed
      */
-    private int      queueSize       = 1000;
+    private int                                    queueSize       = 1000;
     /**
      * Set a default timeout for the method of providing data
      */
-    private Long     defaultTimeout  = 3000L;
+    private Long                                   defaultTimeout   = 3000L;
     /**
      * Allow output log
      */
-    private Boolean  enableLogging   = true;
+    private Boolean                                enableLogging    = true;
     /**
      * Ignore exception thrown by asynchronous execution, method returns null value
      */
-    private boolean ignoreException = false;
+    private boolean                                ignoreException  = false;
+    /**
+     * Async task implement
+     */
+    private Class<? extends AsyncQueryTaskWrapper> taskWrapperClass = AsyncQueryTaskWrapperAdapter.class;
 }

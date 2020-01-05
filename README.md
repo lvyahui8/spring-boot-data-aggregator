@@ -114,6 +114,8 @@ DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
 
 #### 方式一: 函数式调用
 
+注意这里不能将函数式调用改为Lambda表达式, 两者的实际行为是不一致的.
+
 ```java
 User user = dataBeanAggregateQueryFacade.get(
      Collections.singletonMap("userId", 1L), 

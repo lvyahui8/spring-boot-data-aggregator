@@ -6,6 +6,7 @@ import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFac
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptor;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.interceptor.impl.AggregateQueryInterceptorChainImpl;
+import io.github.lvyahui8.spring.aggregate.model.DataConsumeDefinition;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.repository.impl.DataProviderRepositoryImpl;
@@ -14,6 +15,7 @@ import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQuerySe
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.springframework.beans.BeansException;
@@ -30,7 +32,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -39,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
@@ -65,11 +67,43 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         return new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
     }
 
+    private void checkCycle(Map<String,Set<String>> graphAdjMap) {
+        Map<String,Integer> visitStatusMap = new HashMap<>(graphAdjMap.size() * 2);
+        for (Map.Entry<String, Set<String>> item : graphAdjMap.entrySet()) {
+            if (visitStatusMap.containsKey(item.getKey())) {
+                continue;
+            }
+            dfs(graphAdjMap,visitStatusMap,item.getKey());
+        }
+    }
+
+    private void dfs(Map<String,Set<String>> graphAdjMap,Map<String,Integer> visitStatusMap, String node) {
+        if (visitStatusMap.containsKey(node)) {
+            if(visitStatusMap.get(node) == 1) {
+                List<String> relatedNodes = new ArrayList<>();
+                for (Map.Entry<String,Integer> item : visitStatusMap.entrySet()) {
+                    if (item.getValue() == 1) {
+                        relatedNodes.add(item.getKey());
+                    }
+                }
+                throw new IllegalStateException("There are loops in the dependency graph. Related nodes:" + StringUtils.join(relatedNodes));
+            }
+            return ;
+        }
+        visitStatusMap.put(node,1);
+        log.info("visited:{}", node);
+        for (String relateNode : graphAdjMap.get(node)) {
+            dfs(graphAdjMap,visitStatusMap,relateNode);
+        }
+        visitStatusMap.put(node,2);
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public DataBeanAggregateQueryService dataBeanAggregateQueryService (
             @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
         if(properties.getBasePackages() != null) {
+            Map<String,Set<String>> provideDependMap = new HashMap<>();
             for (String basePackage : properties.getBasePackages()) {
                 Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
                 Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
@@ -80,13 +114,18 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
                     Assert.isTrue(Modifier.isPublic(method.getModifiers()),"data provider method must be public");
                     Assert.isTrue(! StringUtils.isEmpty(dataId),"data id must be not null!");
                     DataProvideDefinition provider = DefinitionUtils.getProvideDefinition(method);
+
                     provider.setId(dataId);
                     provider.setIdempotent(beanProvider.idempotent());
                     provider.setTimeout(beanProvider.timeout() > 0 ? beanProvider.timeout() : properties.getDefaultTimeout());
+                    Assert.isTrue(! dataProviderRepository.contains(dataId), "Data providers with the same name are not allowed. dataId: " + dataId);
+                    provideDependMap.put(dataId,provider.getDepends().stream().map(DataConsumeDefinition::getId).collect(Collectors.toSet()));
                     dataProviderRepository.put(provider);
                 }
             }
+            checkCycle(provideDependMap);
         }
+
         DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl();
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
@@ -97,6 +136,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
         service.setRuntimeSettings(runtimeSettings);
         service.setExecutorService(aggregateExecutorService());
         service.setInterceptorChain(aggregateQueryInterceptorChain());
+        service.setTaskWrapperClazz(properties.getTaskWrapperClass());
         service.setApplicationContext(applicationContext);
         return service;
     }

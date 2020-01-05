@@ -6,6 +6,8 @@ import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
+import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTask;
+import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,9 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
     @Setter
     private AggregateQueryInterceptorChain interceptorChain;
 
+    @Setter
+    private Class<? extends AsyncQueryTaskWrapper> taskWrapperClazz;
+
     private AggregationContext initQueryContext(DataProvideDefinition rootProvider, Map<InvokeSignature,Object> queryCache) {
         AggregationContext aggregationContext = new AggregationContext();
         aggregationContext.setRootThread(Thread.currentThread());
@@ -61,14 +66,14 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         AggregationContext aggregationContext = initQueryContext(provider, queryCache);
         interceptorChain.applyQuerySubmitted(aggregationContext);
         try {
-            return innerGet(provider,invokeParams,resultType,aggregationContext);
+            return innerGet(provider,invokeParams,resultType,aggregationContext,null);
         } finally {
             interceptorChain.applyQueryFinished(aggregationContext);
         }
     }
 
     private  <T> T innerGet(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType,
-                     AggregationContext context)
+                     AggregationContext context, DataConsumeDefinition causedConsumer)
             throws InterruptedException, InvocationTargetException, IllegalAccessException{
         Map<String,Object> dependObjectMap = null;
         try {
@@ -82,12 +87,20 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             }
             /* 拼凑dependObjects和invokeParams */
             Object [] args = new Object[provider.getMethod().getParameterCount()];
+
             for (int i = 0 ; i < provider.getMethodArgs().size(); i ++) {
                 MethodArg methodArg = provider.getMethodArgs().get(i);
                 if (methodArg.getDependType().equals(DependType.OTHER_MODEL)) {
-                    args[i] = dependObjectMap.get(methodArg.getAnnotationKey());
+                    args[i] = dependObjectMap.get(methodArg.getAnnotationKey() + "_" + methodArg.getParameter().getName());
                 } else {
-                    args[i] = invokeParams.get(methodArg.getAnnotationKey());
+                    String paramKey ;
+                    if(causedConsumer != null && causedConsumer.getDynamicParameterKeyMap() != null
+                    && causedConsumer.getDynamicParameterKeyMap().containsKey(methodArg.getAnnotationKey())) {
+                        paramKey = causedConsumer.getDynamicParameterKeyMap().get(methodArg.getAnnotationKey());
+                    } else {
+                        paramKey = methodArg.getAnnotationKey();
+                    }
+                    args[i] = invokeParams.get(paramKey);
                 }
                 if (args[i] != null && ! methodArg.getParameter().getType().isAssignableFrom(args[i].getClass())) {
                     throw new IllegalArgumentException("param type not match, param:"
@@ -131,15 +144,25 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(consumeDefinitions.size());
         for (DataConsumeDefinition depend : consumeDefinitions) {
             consumeDefinitionMap.put(depend.getId(),depend);
-            Future<?> future = executorService.submit(() -> {
-                try {
-                    Object o = innerGet(repository.get(depend.getId()),invokeParams, depend.getClazz(),context);
-                    return depend.getClazz().cast(o);
-                } finally {
-                    stopDownLatch.countDown();
+            AsyncQueryTaskWrapper taskWrapper = null;
+            try {
+                taskWrapper = taskWrapperClazz.newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException("task wrapper instance create failed.",e);
+            }
+            taskWrapper.beforeSubmit();
+            Future<?> future = executorService.submit(new AsyncQueryTask<Object>(Thread.currentThread(),taskWrapper) {
+                @Override
+                public Object execute() throws Exception {
+                    try {
+                        Object o = innerGet(repository.get(depend.getId()),invokeParams, depend.getClazz(),context,depend);
+                        return depend.getClazz().cast(o);
+                    } finally {
+                        stopDownLatch.countDown();
+                    }
                 }
             });
-            futureMap.put(depend.getId(),future);
+            futureMap.put(depend.getId() + "_" + depend.getOriginalParameterName(),future);
         }
         stopDownLatch.await(timeout, TimeUnit.MILLISECONDS);
         if(! futureMap.isEmpty()){
