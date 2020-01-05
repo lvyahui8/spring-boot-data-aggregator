@@ -4,24 +4,35 @@ import java.util.concurrent.Callable;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
- * @since 2019/12/24 23:07
+ * @since 2019/12/25 22:40
  */
-public interface AsyncQueryTask<T> extends Callable<T> {
-    /**
-     * 任务提交之前执行. 此方法在提交任务的那个线程中执行
-     */
-    void beforeSubmit();
+public abstract class AsyncQueryTask<T> implements Callable<T> {
+    Thread      taskFromThread;
+    AsyncQueryTaskWrapper asyncQueryTaskWrapper;
+
+    public AsyncQueryTask(Thread taskFromThread, AsyncQueryTaskWrapper asyncQueryTaskWrapper) {
+        this.taskFromThread = taskFromThread;
+        this.asyncQueryTaskWrapper = asyncQueryTaskWrapper;
+    }
+
+    @Override
+    public T call() throws Exception {
+        try {
+            if(asyncQueryTaskWrapper != null) {
+                asyncQueryTaskWrapper.beforeExecute(taskFromThread);
+            }
+            return execute();
+        } finally {
+            if (asyncQueryTaskWrapper != null) {
+                asyncQueryTaskWrapper.afterExecute(taskFromThread);
+            }
+        }
+    }
 
     /**
-     * 任务开始执行前执行. 此方法在异步线程中执行
-     * @param taskFrom 提交任务的那个线程
+     *
+     * @return
+     * @throws Exception
      */
-    void beforeExecute(Thread taskFrom);
-
-    /**
-     * 任务执行结束后执行. 此方法在异步线程中执行
-     * 注意, 不管用户的方法抛出何种异常, 此方法都会执行.
-     * @param taskFrom 提交任务的那个线程
-     */
-    void afterExecute(Thread taskFrom);
+    public abstract T  execute() throws Exception;
 }
