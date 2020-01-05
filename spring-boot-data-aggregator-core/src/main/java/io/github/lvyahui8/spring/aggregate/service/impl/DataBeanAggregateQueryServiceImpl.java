@@ -146,8 +146,8 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             AbstractAsyncQueryTask queryTask = null;
             try {
                 queryTask = taskClazz.newInstance();
-            } catch (InstantiationException ignored) {
-                //
+            } catch (InstantiationException e) {
+                throw new RuntimeException("task instance create failed.",e);
             }
             queryTask.setCallable(() -> {
                 try {
