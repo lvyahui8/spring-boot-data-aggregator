@@ -28,6 +28,10 @@ public class ExampleAppContext {
         return LOGGED_USER.get() != null ? LOGGED_USER.get().getUsername() : null;
     }
 
+    public static User getUser() {
+        return LOGGED_USER.get();
+    }
+
     public static void remove() {
         LOGGED_USER.remove();
     }
