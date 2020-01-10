@@ -6,6 +6,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
 
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
+
 ## Background and purpose
 
 When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.
