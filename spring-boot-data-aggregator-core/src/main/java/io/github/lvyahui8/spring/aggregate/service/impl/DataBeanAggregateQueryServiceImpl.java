@@ -128,7 +128,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             return resultType.cast(interceptorChain.applyQueryAfter(context,provider,result));
         } catch (Exception e) {
             interceptorChain.applyExceptionHandle(context,provider,e);
-            return null;
+            throw e;
         }
     }
 
@@ -169,7 +169,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
             for (Map.Entry<String,Future<?>> item : futureMap.entrySet()) {
                 Future<?> future = item.getValue();
                 Object value = null;
-                DataConsumeDefinition consumeDefinition = consumeDefinitionMap.get(item.getKey());
+                DataConsumeDefinition consumeDefinition = consumeDefinitionMap.get(item.getKey().substring(0,item.getKey().indexOf('_')));
                 try {
                     value = future.get();
                 } catch (ExecutionException e) {

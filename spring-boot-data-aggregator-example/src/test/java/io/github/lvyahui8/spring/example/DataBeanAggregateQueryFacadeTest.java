@@ -178,4 +178,21 @@ public class DataBeanAggregateQueryFacadeTest {
         System.out.println(specialUserCollection);
     }
 
+    @Test
+    public void testParameterTypeException() throws Exception {
+        try{
+            dataBeanAggregateQueryFacade.get(Collections.singletonMap("userId", "1"),
+                    new Function2<User, List<Post>, User>() {
+                        @Override
+                        public User apply(@DataConsumer("user") User user,
+                                          @DataConsumer("posts") List<Post> posts) {
+                            return user;
+                        }
+                    });
+            throw new IllegalStateException("must throw IllegalArgumentException");
+        } catch (Exception e) {
+            log.error("eMsg:",e);
+            Assert.isTrue(e instanceof IllegalArgumentException,"e must be typeof IllegalArgumentException");
+        }
+    }
 }
