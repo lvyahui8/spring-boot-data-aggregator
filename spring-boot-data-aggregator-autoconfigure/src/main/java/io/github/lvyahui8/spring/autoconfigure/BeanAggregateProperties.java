@@ -35,6 +35,7 @@ public class BeanAggregateProperties {
     /**
      * Allow output log
      */
+    @Deprecated
     private Boolean                                enableLogging    = true;
     /**
      * Ignore exception thrown by asynchronous execution, method returns null value
