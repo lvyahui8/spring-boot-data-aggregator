@@ -8,7 +8,6 @@ import lombok.Data;
  */
 @Data
 public class RuntimeSettings {
-    private boolean enableLogging;
     private boolean ignoreException;
     private Long timeout;
 }

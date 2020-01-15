@@ -28,7 +28,8 @@ public class SampleAggregateQueryInterceptor implements AggregateQueryIntercepto
 
     @Override
     public Object queryAfter(AggregationContext aggregationContext, DataProvideDefinition provideDefinition, Object result) {
-        log.info("query after. provider:{},result:{}",provideDefinition.getMethod().getName(),result.toString());
+        log.info("query after. provider:{},result:{}",provideDefinition.getMethod().getName(),result != null ?
+                result.toString() : "null");
         return result;
     }
 

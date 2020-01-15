@@ -128,8 +128,6 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
         DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl();
         RuntimeSettings runtimeSettings = new RuntimeSettings();
-        runtimeSettings.setEnableLogging(properties.getEnableLogging() != null
-                ? properties.getEnableLogging() : false);
         runtimeSettings.setIgnoreException(properties.isIgnoreException());
         runtimeSettings.setTimeout(properties.getDefaultTimeout());
         service.setRepository(dataProviderRepository);
