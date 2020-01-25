@@ -6,11 +6,17 @@ import java.util.concurrent.Callable;
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/12/25 22:40
  */
-public abstract class AsyncQueryTask<T> implements Callable<T> {
-    Thread      taskFromThread;
-    AsyncQueryTaskWrapper asyncQueryTaskWrapper;
+public abstract class AbstractAsyncQueryTask<T> implements Callable<T> {
+    /**
+     * 任务来源线程
+     */
+    private Thread      taskFromThread;
+    /**
+     * 异步任务包装器
+     */
+    private AsyncQueryTaskWrapper asyncQueryTaskWrapper;
 
-    public AsyncQueryTask(Thread taskFromThread, AsyncQueryTaskWrapper asyncQueryTaskWrapper) {
+    public AbstractAsyncQueryTask(Thread taskFromThread, AsyncQueryTaskWrapper asyncQueryTaskWrapper) {
         this.taskFromThread = taskFromThread;
         this.asyncQueryTaskWrapper = asyncQueryTaskWrapper;
     }
@@ -30,9 +36,10 @@ public abstract class AsyncQueryTask<T> implements Callable<T> {
     }
 
     /**
+     * 异步任务的实际内容
      *
-     * @return
-     * @throws Exception
+     * @return 异步任务返回值
+     * @throws Exception 异步任务允许抛出异常
      */
-    public abstract T  execute() throws Exception;
+    public abstract T execute() throws Exception;
 }

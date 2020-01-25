@@ -6,7 +6,7 @@ import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
-import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTask;
+import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
 import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
 import lombok.Setter;
@@ -151,7 +151,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
                 throw new RuntimeException("task wrapper instance create failed.",e);
             }
             taskWrapper.beforeSubmit();
-            Future<?> future = executorService.submit(new AsyncQueryTask<Object>(Thread.currentThread(),taskWrapper) {
+            Future<?> future = executorService.submit(new AbstractAsyncQueryTask<Object>(Thread.currentThread(),taskWrapper) {
                 @Override
                 public Object execute() throws Exception {
                     try {
@@ -186,14 +186,15 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
 
     private void throwException(ExecutionException e)  throws InterruptedException,
             InvocationTargetException, IllegalAccessException  {
-        if (e.getCause() instanceof InterruptedException) {
-            throw (InterruptedException) e.getCause();
-        } else if (e.getCause() instanceof  InvocationTargetException){
-            throw (InvocationTargetException) e.getCause();
-        } else if (e.getCause() instanceof IllegalAccessException) {
-            throw (IllegalAccessException) e.getCause();
+        Throwable cause = e.getCause();
+        if (cause instanceof InterruptedException) {
+            throw (InterruptedException) cause;
+        } else if (cause instanceof  InvocationTargetException){
+            throw (InvocationTargetException) cause;
+        } else if (cause instanceof IllegalAccessException) {
+            throw (IllegalAccessException) cause;
         } else {
-            throw (RuntimeException) e.getCause();
+            throw (RuntimeException) cause;
         }
     }
 

@@ -103,7 +103,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     public DataBeanAggregateQueryService dataBeanAggregateQueryService (
             @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
         if(properties.getBasePackages() != null) {
-            Map<String,Set<String>> provideDependMap = new HashMap<>();
+            Map<String,Set<String>> provideDependMap = new HashMap<>(64);
             for (String basePackage : properties.getBasePackages()) {
                 Reflections reflections = new Reflections(basePackage, new MethodAnnotationsScanner());
                 Set<Method> providerMethods = reflections.getMethodsAnnotatedWith(DataProvider.class);
