@@ -16,7 +16,7 @@ public abstract class AbstractAsyncQueryTask<T> implements Callable<T> {
      */
     private AsyncQueryTaskWrapper asyncQueryTaskWrapper;
 
-    public AbstractAsyncQueryTask(Thread taskFromThread, AsyncQueryTaskWrapper asyncQueryTaskWrapper) {
+    protected AbstractAsyncQueryTask(Thread taskFromThread, AsyncQueryTaskWrapper asyncQueryTaskWrapper) {
         this.taskFromThread = taskFromThread;
         this.asyncQueryTaskWrapper = asyncQueryTaskWrapper;
     }

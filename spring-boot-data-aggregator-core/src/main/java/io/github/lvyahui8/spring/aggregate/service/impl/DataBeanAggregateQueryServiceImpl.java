@@ -75,7 +75,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
     private  <T> T innerGet(DataProvideDefinition provider, Map<String, Object> invokeParams, Class<T> resultType,
                      AggregationContext context, DataConsumeDefinition causedConsumer)
             throws InterruptedException, InvocationTargetException, IllegalAccessException{
-        Map<String,Object> dependObjectMap = null;
+        Map<String,Object> dependObjectMap;
         try {
             interceptorChain.applyQueryBefore(context,provider);
             if(provider.getDepends() != null && ! provider.getDepends().isEmpty()) {
@@ -144,7 +144,7 @@ public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQuery
         Map<String,DataConsumeDefinition> consumeDefinitionMap = new HashMap<>(consumeDefinitions.size());
         for (DataConsumeDefinition depend : consumeDefinitions) {
             consumeDefinitionMap.put(depend.getId(),depend);
-            AsyncQueryTaskWrapper taskWrapper = null;
+            AsyncQueryTaskWrapper taskWrapper;
             try {
                 taskWrapper = taskWrapperClazz.newInstance();
             } catch (InstantiationException e) {

@@ -142,7 +142,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     /**
      * 允许用户自定义线程池
      *
-     * @return
+     * @return 线程池服务
      */
     @Bean(name = "aggregateExecutorService")
     @ConditionalOnMissingBean(name = "aggregateExecutorService",value=ExecutorService.class)
@@ -158,7 +158,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     /**
      * 允许用户自定义provider存储
      *
-     * @return
+     * @return  provider数据仓库
      */
     @Bean(name = "dataProviderRepository")
     @ConditionalOnMissingBean(DataProviderRepository.class)
