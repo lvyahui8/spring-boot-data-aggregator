@@ -10,8 +10,8 @@ import io.github.lvyahui8.spring.aggregate.model.DataConsumeDefinition;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.repository.impl.DataProviderRepositoryImpl;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
-import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
+import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import io.github.lvyahui8.spring.annotation.DataProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +100,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnMissingBean
-    public DataBeanAggregateQueryService dataBeanAggregateQueryService (
+    public DataBeanAggregateService dataBeanAggregateQueryService (
             @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
         if(properties.getBasePackages() != null) {
             Map<String,Set<String>> provideDependMap = new HashMap<>(64);
@@ -126,7 +126,7 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
             checkCycle(provideDependMap);
         }
 
-        DataBeanAggregateQueryServiceImpl service = new DataBeanAggregateQueryServiceImpl();
+        DataBeanAggregateServiceImpl service = new DataBeanAggregateServiceImpl();
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.setIgnoreException(properties.isIgnoreException());
         runtimeSettings.setTimeout(properties.getDefaultTimeout());

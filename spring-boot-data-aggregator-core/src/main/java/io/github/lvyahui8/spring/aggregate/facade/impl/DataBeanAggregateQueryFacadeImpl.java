@@ -3,7 +3,7 @@ package io.github.lvyahui8.spring.aggregate.facade.impl;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import org.springframework.util.Assert;
 
@@ -20,10 +20,10 @@ import java.util.Map;
  */
 public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryFacade {
 
-    private final DataBeanAggregateQueryService dataBeanAggregateQueryService;
+    private final DataBeanAggregateService dataBeanAggregateService;
 
-    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateQueryService dataBeanAggregateQueryService) {
-        this.dataBeanAggregateQueryService = dataBeanAggregateQueryService;
+    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateService dataBeanAggregateService) {
+        this.dataBeanAggregateService = dataBeanAggregateService;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAggregateQueryService.get(id,invokeParams,clazz);
+        return dataBeanAggregateService.get(id,invokeParams,clazz);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         }
         try {
             @SuppressWarnings("unchecked")
-            T ret = (T) dataBeanAggregateQueryService.get(provider, invokeParams, applyMethod.getReturnType());
+            T ret = (T) dataBeanAggregateService.get(provider, invokeParams, applyMethod.getReturnType());
 
             return ret;
         } finally {

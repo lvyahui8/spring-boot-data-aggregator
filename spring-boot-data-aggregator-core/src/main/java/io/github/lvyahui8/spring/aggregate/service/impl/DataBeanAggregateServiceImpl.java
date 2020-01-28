@@ -8,7 +8,7 @@ import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
 import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +25,7 @@ import java.util.concurrent.*;
  * @since 2019/6/2 21:50
  */
 @Slf4j
-public class DataBeanAggregateQueryServiceImpl implements DataBeanAggregateQueryService {
+public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
 
     @Setter
     private DataProviderRepository repository;

@@ -17,7 +17,7 @@ public class AggregateQueryLoggingAspect {
     @Autowired
     private ExampleProperties exampleProperties;
 
-    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl.get(..))")
+    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl.get(..))")
     public Object doLogging(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object retVal ;
