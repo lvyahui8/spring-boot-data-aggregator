@@ -3,17 +3,21 @@ package io.github.lvyahui8.spring.aggregate.service.impl;
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
 import io.github.lvyahui8.spring.aggregate.consts.AggregationConstant;
 import io.github.lvyahui8.spring.aggregate.context.AggregationContext;
+import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.aggregate.repository.DataProviderRepository;
 import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
 import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
+import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,34 @@ public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
         aggregationContext.setRootProvideDefinition(rootProvider);
         aggregationContext.setCacheMap(queryCache);
         return aggregationContext;
+    }
+
+    @Override
+    public DataProvideDefinition getProvider(MultipleArgumentsFunction<?> multipleArgumentsFunction) throws IllegalAccessException {
+        DataProvideDefinition provider = repository.get(multipleArgumentsFunction.getClass().getName());
+        if(provider != null) {
+            return provider;
+        }
+        Method[] methods = multipleArgumentsFunction.getClass().getMethods();
+        Method applyMethod = null;
+
+
+        for (Method method : methods) {
+            if(! Modifier.isStatic(method.getModifiers()) && ! method.isDefault()) {
+                applyMethod = method;
+                break;
+            }
+        }
+
+        if(applyMethod == null) {
+            throw new IllegalAccessException(multipleArgumentsFunction.getClass().getName());
+        }
+
+        provider = DefinitionUtils.getProvideDefinition(applyMethod);
+        provider.setTarget(multipleArgumentsFunction);
+        provider.setId(multipleArgumentsFunction.getClass().getName());
+        repository.put(provider);
+        return provider;
     }
 
     @Override

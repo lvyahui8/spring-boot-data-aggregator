@@ -1,5 +1,6 @@
 package io.github.lvyahui8.spring.aggregate.service;
 
+import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,4 +43,12 @@ public interface DataBeanAggregateService {
     <T> T get(DataProvideDefinition provider, Map<String,Object> invokeParams, Class<T> resultType)
             throws InterruptedException, InvocationTargetException, IllegalAccessException;
 
+    /**
+     * 通过MultipleArgumentsFunction获取provider实例
+     *
+     * @param function 多参函数
+     * @return provider实例
+     * @throws IllegalAccessException ignored
+     */
+    DataProvideDefinition getProvider(MultipleArgumentsFunction<?> function) throws IllegalAccessException;
 }

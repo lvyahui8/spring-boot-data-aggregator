@@ -195,4 +195,26 @@ public class DataBeanAggregateQueryFacadeTest {
             Assert.isTrue(e instanceof IllegalArgumentException,"e must be typeof IllegalArgumentException");
         }
     }
+
+    @Test
+    public void testAnonymousProviderCache() throws Exception {
+        Function2<Category, List<String>, String> userFunction = new Function2<Category, List<String>, String>() {
+            @Override
+            public String apply(@DataConsumer("rootCategory") Category category,
+                              @DataConsumer("topCategoryNames") List<String> topCategoryNames) {
+                return category.getName();
+            }
+        };
+        Map<String, Object> map = Collections.singletonMap("userId", 1L);
+        Exception exp = null;
+        for (int i = 0; i < 1000; i ++) {
+            try {
+                String name =  dataBeanAggregateQueryFacade.get(map,userFunction);
+            } catch (Exception e) {
+                exp = e;
+                log.error("exp:" + e.getMessage());
+            }
+        }
+        Assert.isNull(exp,"exp must be null!");
+    }
 }

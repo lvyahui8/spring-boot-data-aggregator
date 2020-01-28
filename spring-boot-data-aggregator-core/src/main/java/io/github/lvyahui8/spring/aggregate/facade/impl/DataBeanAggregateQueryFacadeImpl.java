@@ -4,12 +4,10 @@ import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
-import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
 
@@ -43,28 +41,12 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
 
     @Override
     public <T> T get(Map<String, Object> invokeParams, MultipleArgumentsFunction<T> multipleArgumentsFunction, Long timeout)  throws InterruptedException, IllegalAccessException, InvocationTargetException{
-        Method[] methods = multipleArgumentsFunction.getClass().getMethods();
-        Method applyMethod = null;
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
 
-        for (Method method : methods) {
-            if(! Modifier.isStatic(method.getModifiers()) && ! method.isDefault()) {
-                applyMethod = method;
-                break;
-            }
-        }
-
-        if(applyMethod == null) {
-            throw new IllegalAccessException(multipleArgumentsFunction.getClass().getName());
-        }
-
-
-        DataProvideDefinition provider = DefinitionUtils.getProvideDefinition(applyMethod);
-        provider.setTimeout(timeout);
-        provider.setTarget(multipleArgumentsFunction);
-
+        DataProvideDefinition provider = dataBeanAggregateService.getProvider(multipleArgumentsFunction);
+        Method applyMethod = provider.getMethod();
         boolean accessible = applyMethod.isAccessible();
         if(! accessible) {
             applyMethod.setAccessible(true);
