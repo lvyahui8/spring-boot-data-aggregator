@@ -6,6 +6,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
 
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
+
 ## 背景与目的
 
 在开发后台接口时, 为了开发效率, 我们往往习惯编写串行执行的代码, 去调用不同的接口, 即使这些接口之间并无依赖,  这使得最后开发的接口性能低下, 且数据不方便复用
