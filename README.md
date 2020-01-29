@@ -1,5 +1,7 @@
-# Spring Boot 并发数据聚合库
+# Spring Boot 并行数据聚合库
 
+[![Build Status](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator.svg?branch=develop)](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator)
+[![Codecov](https://codecov.io/gh/lvyahui8/spring-boot-data-aggregator/branch/develop/graph/badge.svg)](https://codecov.io/gh/lvyahui8/spring-boot-data-aggregator/branch/develop)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
@@ -8,9 +10,9 @@
 
 在开发后台接口时, 为了开发效率, 我们往往习惯编写串行执行的代码, 去调用不同的接口, 即使这些接口之间并无依赖,  这使得最后开发的接口性能低下, 且数据不方便复用
 
-**此框架目的旨在保持开发效率的同时, 很方便地支持并发和数据复用**
+**此框架目的旨在保持开发效率的同时, 很方便地支持并行和数据复用**
 
-当然, 在极端高并发的场景下,  并行调用接口对性能提升并不明显,  但不代表这个项目没有价值.  因为互联网世界的大部分应用, 并不会有非常高的并发访问量
+当然, 在极端高并发的场景下,CPU很可能已经跑满, 并行调用接口对性能提升并不明显, 但不代表这个项目没有价值. 因为互联网世界的大部分应用, 并不会有非常高的并发访问量
 
 ## 特性
 
@@ -40,7 +42,7 @@
 
 ## 使用方法
 
-### 配置
+### 1. 配置
 
 pom.xml
 
@@ -59,13 +61,13 @@ application.properties
 io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
-### 添加注解
+### 2. 添加注解
 
 - `@DataProvider` 定义数据提供者
 - `@DataConsumer` 定义方法参数依赖类型为其他接口返回值, 其他接口是一个`@DataProvider`
 - `@InvokeParameter` 定义方法参数依赖类型为用户输入值
 
-### 查询
+### 3. 查询
 
 Spring Bean `DataBeanAggregateQueryFacade` 查询指定的数据的门面
 
@@ -111,6 +113,8 @@ DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
 ```
 
 #### 方式一: 函数式调用
+
+注意这里不能将函数式调用改为Lambda表达式, 两者的实际行为是不一致的.
 
 ```java
 User user = dataBeanAggregateQueryFacade.get(

@@ -4,23 +4,20 @@ import io.github.lvyahui8.spring.example.configuration.ExampleProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/7/7 23:17
  */
-@Aspect
-@Component
 @Slf4j
+@Deprecated
 public class AggregateQueryLoggingAspect {
 
     @Autowired
     private ExampleProperties exampleProperties;
 
-    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateQueryServiceImpl.get(..))")
+    @Around("execution(* io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl.get(..))")
     public Object doLogging(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object retVal ;

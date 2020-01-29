@@ -28,6 +28,11 @@ public @interface DataConsumer {
     String value() default "";
 
     /**
+     * The parameter key required by the method being consumed will be dynamically replaced
+     */
+    DynamicParameter [] dynamicParameters() default {};
+
+    /**
      * Exception handling, default by global configuration
      */
     ExceptionProcessingMethod exceptionProcessingMethod()

@@ -1,5 +1,7 @@
 # Spring Boot Data Parallel Aggregation Library
 
+[![Build Status](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator.svg?branch=develop)](https://travis-ci.org/lvyahui8/spring-boot-data-aggregator)
+[![Codecov](https://codecov.io/gh/lvyahui8/spring-boot-data-aggregator/branch/develop/graph/badge.svg)](https://codecov.io/gh/lvyahui8/spring-boot-data-aggregator/branch/develop)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
@@ -41,7 +43,7 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
 ## Getting Started
 
-### Configuration
+### 1. Configuration
 
 pom.xml
 
@@ -60,7 +62,7 @@ application.properties
 io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 ```
 
-### Annotation
+### 2. Annotation
 
 - `@DataProvider`:  define the data provider
 
@@ -68,7 +70,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 
 - `@InvokeParameter`: define the method parameter dependency type as the user input value
 
-### Query
+### 3. Query
 
 Spring Bean `dataBeanAggregateQueryFacade` query data facade API
 

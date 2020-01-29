@@ -1,19 +1,15 @@
 package io.github.lvyahui8.spring.aggregate.facade.impl;
 
-import io.github.lvyahui8.spring.aggregate.consts.AggregationConstant;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
-import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateQueryService;
-import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
+import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -22,10 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryFacade {
 
-    private final DataBeanAggregateQueryService dataBeanAggregateQueryService;
+    private final DataBeanAggregateService dataBeanAggregateService;
 
-    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateQueryService dataBeanAggregateQueryService) {
-        this.dataBeanAggregateQueryService = dataBeanAggregateQueryService;
+    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateService dataBeanAggregateService) {
+        this.dataBeanAggregateService = dataBeanAggregateService;
     }
 
     @Override
@@ -35,8 +31,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
-        return dataBeanAggregateQueryService.get(id,invokeParams,clazz,
-                new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY));
+        return dataBeanAggregateService.get(id,invokeParams,clazz);
     }
 
     @Override
@@ -46,36 +41,19 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
 
     @Override
     public <T> T get(Map<String, Object> invokeParams, MultipleArgumentsFunction<T> multipleArgumentsFunction, Long timeout)  throws InterruptedException, IllegalAccessException, InvocationTargetException{
-        Method[] methods = multipleArgumentsFunction.getClass().getMethods();
-        Method applyMethod = null;
         if(invokeParams == null) {
             invokeParams = Collections.emptyMap();
         }
 
-        for (Method method : methods) {
-            if(! Modifier.isStatic(method.getModifiers()) && ! method.isDefault()) {
-                applyMethod = method;
-                break;
-            }
-        }
-
-        if(applyMethod == null) {
-            throw new IllegalAccessException(multipleArgumentsFunction.getClass().getName());
-        }
-
-
-        DataProvideDefinition provider = DefinitionUtils.getProvideDefinition(applyMethod);
-        provider.setTimeout(timeout);
-        provider.setTarget(multipleArgumentsFunction);
-
+        DataProvideDefinition provider = dataBeanAggregateService.getProvider(multipleArgumentsFunction);
+        Method applyMethod = provider.getMethod();
         boolean accessible = applyMethod.isAccessible();
         if(! accessible) {
             applyMethod.setAccessible(true);
         }
         try {
             @SuppressWarnings("unchecked")
-            T ret = (T) dataBeanAggregateQueryService.get(provider, invokeParams, applyMethod.getReturnType(),
-                    new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY));
+            T ret = (T) dataBeanAggregateService.get(provider, invokeParams, applyMethod.getReturnType());
 
             return ret;
         } finally {

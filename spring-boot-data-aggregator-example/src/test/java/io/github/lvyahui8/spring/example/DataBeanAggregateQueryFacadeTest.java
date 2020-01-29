@@ -1,12 +1,16 @@
 package io.github.lvyahui8.spring.example;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.Function2;
 import io.github.lvyahui8.spring.aggregate.func.Function3;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
+import io.github.lvyahui8.spring.annotation.DynamicParameter;
 import io.github.lvyahui8.spring.autoconfigure.BeanAggregateProperties;
 import io.github.lvyahui8.spring.example.context.ExampleAppContext;
 import io.github.lvyahui8.spring.example.context.RequestContext;
+import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import io.github.lvyahui8.spring.example.model.Category;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
@@ -31,11 +35,43 @@ import java.util.Map;
 @Slf4j
 public class DataBeanAggregateQueryFacadeTest {
 
+    private static final int NUM = 100;
+
     @Autowired
     private DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
 
     @Autowired
     private BeanAggregateProperties beanAggregateProperties;
+
+    @Autowired
+    UserQueryFacade userQueryFacade;
+
+    @Test
+    public void testSample() throws Exception {
+        {
+            User user = dataBeanAggregateQueryFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
+            Assert.notNull(user,"user not null");
+            Assert.notNull(user.getPosts(),"user posts not null");
+            log.info("user.name:{},user.posts.size:{}",
+                    user.getUsername(),user.getPosts().size());
+        }
+
+        log.info("------------------------------------------------------------------");
+
+        {
+            User user = userQueryFacade.getUserFinal(1L);
+            Assert.notNull(user.getFollowers(),"user followers not null");
+        }
+
+        log.info("------------------------------------------------------------------");
+
+        {
+            for (int i = 0; i < NUM; i ++) {
+                String s = dataBeanAggregateQueryFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
+                Assert.isTrue(org.apache.commons.lang3.StringUtils.isNotEmpty(s),"s  not null");
+            }
+        }
+    }
 
     @Test
     public void testExceptionProcessing() throws Exception {
@@ -46,15 +82,12 @@ public class DataBeanAggregateQueryFacadeTest {
                         Collections.singletonMap("userId", 1L), User.class);
             } catch (Exception e) {
                 log.info("default settings is SUSPEND, catch an exception: {}",e.getMessage(),e);
-                success = true;
             }
         } else {
             User user = dataBeanAggregateQueryFacade.get("userWithPosts",
                     Collections.singletonMap("userId", 1L), User.class);
-            System.out.println(user);
-            success = true;
+            Assert.notNull(user,"user must be not null!");
         }
-        Assert.isTrue(success,"exception handle success");
     }
 
     @Test
@@ -120,5 +153,68 @@ public class DataBeanAggregateQueryFacadeTest {
         } finally {
             RequestContext.removeTenantId();
         }
+    }
+
+    @Test
+    public void testDynamicParameter() throws Exception {
+        ImmutableMap<String, Object> params = ImmutableMap.<String, Object>builder()
+                .put("userA_Id", 1L)
+                .put("userB_Id", 2L)
+                .put("userC_Id", 3L).build();
+        Object specialUserCollection = dataBeanAggregateQueryFacade.get(params,
+                new Function3<User,User,User,Object>() {
+                    @Override
+                    public Object apply(
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userA_Id")}) User userA,
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userB_Id")}) User userB,
+                            @DataConsumer(id = "user",
+                                    dynamicParameters = {@DynamicParameter(targetKey = "userId" ,replacementKey = "userC_Id")}) User userC) {
+                        return Lists.newArrayList(userA,userB,userC);
+                    }
+                });
+        System.out.println(specialUserCollection instanceof List);
+        System.out.println(specialUserCollection);
+    }
+
+    @Test
+    public void testParameterTypeException() throws Exception {
+        try{
+            dataBeanAggregateQueryFacade.get(Collections.singletonMap("userId", "1"),
+                    new Function2<User, List<Post>, User>() {
+                        @Override
+                        public User apply(@DataConsumer("user") User user,
+                                          @DataConsumer("posts") List<Post> posts) {
+                            return user;
+                        }
+                    });
+            throw new IllegalStateException("must throw IllegalArgumentException");
+        } catch (Exception e) {
+            log.error("eMsg:",e);
+            Assert.isTrue(e instanceof IllegalArgumentException,"e must be typeof IllegalArgumentException");
+        }
+    }
+
+    @Test
+    public void testAnonymousProviderCache() throws Exception {
+        Function2<Category, List<String>, String> userFunction = new Function2<Category, List<String>, String>() {
+            @Override
+            public String apply(@DataConsumer("rootCategory") Category category,
+                              @DataConsumer("topCategoryNames") List<String> topCategoryNames) {
+                return category.getName();
+            }
+        };
+        Map<String, Object> map = Collections.singletonMap("userId", 1L);
+        Exception exp = null;
+        for (int i = 0; i < 1000; i ++) {
+            try {
+                String name =  dataBeanAggregateQueryFacade.get(map,userFunction);
+            } catch (Exception e) {
+                exp = e;
+                log.error("exp:" + e.getMessage());
+            }
+        }
+        Assert.isNull(exp,"exp must be null!");
     }
 }

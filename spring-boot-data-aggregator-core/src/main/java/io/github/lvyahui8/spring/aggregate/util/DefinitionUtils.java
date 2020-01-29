@@ -2,6 +2,7 @@ package io.github.lvyahui8.spring.aggregate.util;
 
 import io.github.lvyahui8.spring.aggregate.model.*;
 import io.github.lvyahui8.spring.annotation.DataConsumer;
+import io.github.lvyahui8.spring.annotation.DynamicParameter;
 import io.github.lvyahui8.spring.annotation.InvokeParameter;
 import io.github.lvyahui8.spring.enums.ExceptionProcessingMethod;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -11,7 +12,9 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
@@ -57,6 +60,14 @@ public class DefinitionUtils {
             DataConsumeDefinition dataConsumeDefinition = new DataConsumeDefinition();
             dataConsumeDefinition.setClazz(parameter.getType());
             dataConsumeDefinition.setId(dataId);
+            if(dataConsumer.dynamicParameters().length > 0) {
+                Map<String, String> parameterKeyMap = new HashMap<>(dataConsumer.dynamicParameters().length);
+                for (DynamicParameter dynamicParameter : dataConsumer.dynamicParameters()) {
+                    parameterKeyMap.put(dynamicParameter.targetKey(),dynamicParameter.replacementKey());
+                }
+                dataConsumeDefinition.setDynamicParameterKeyMap(parameterKeyMap);
+            }
+            dataConsumeDefinition.setOriginalParameterName(parameter.getName());
             if(! dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.BY_DEFAULT)) {
                 dataConsumeDefinition.setIgnoreException(
                         dataConsumer.exceptionProcessingMethod().equals(ExceptionProcessingMethod.IGNORE)
