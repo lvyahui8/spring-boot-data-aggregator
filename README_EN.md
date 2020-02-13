@@ -113,15 +113,11 @@ public class UserServiceImpl implements UserService {
 
 ### 2. Call the aggregation interface
 
-```java
-@Autowired
-DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
-```
-
 #### Method 1: Functional call
 
+
 ```java
-User user = dataBeanAggregateQueryFacade.get(
+User user = DataFacade.get(
      Collections.singletonMap("userId", 1L), 
      new Function2<User, List<Post>, User>() {
             @Override
@@ -155,8 +151,7 @@ public class UserAggregate {
 Specify queried data id, invoke parameters, and return type to invoke `facade.get` method
 
 ```java
-DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-User user = queryFacade.get(/*data id*/ "userWithPosts",
+User user = DataFacade.get(/*data id*/ "userWithPosts",
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L),
                             User.class);

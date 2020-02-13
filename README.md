@@ -110,17 +110,12 @@ public class UserServiceImpl implements UserService {
 
 ### 2. 调用聚合接口
 
-```java
-@Autowired
-DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
-```
-
 #### 方式一: 函数式调用
 
 注意这里不能将函数式调用改为Lambda表达式, 两者的实际行为是不一致的.
 
 ```java
-User user = dataBeanAggregateQueryFacade.get(
+User user = DataFacade.get(
      Collections.singletonMap("userId", 1L), 
      new Function2<User, List<Post>, User>() {
             @Override
@@ -154,7 +149,7 @@ public class UserAggregate {
 指定要查询的data id, 查询参数, 返回值类型, 并调用`facade.get`方法即可
 
 ```java
-User user = dataBeanAggregateQueryFacade.get(/*data id*/ "userWithPosts", 
+User user = DataFacade.get(/*data id*/ "userWithPosts",
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L), 
                             User.class);

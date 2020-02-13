@@ -14,6 +14,7 @@ import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import io.github.lvyahui8.spring.annotation.DataProvider;
+import io.github.lvyahui8.spring.facade.FacadeInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -64,7 +65,9 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     @ConditionalOnMissingBean
     public DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade(
             @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
-        return new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
+        DataBeanAggregateQueryFacadeImpl facade = new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
+        FacadeInitializer.initFacade(facade);
+        return facade;
     }
 
     private void checkCycle(Map<String,Set<String>> graphAdjMap) {
