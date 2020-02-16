@@ -6,6 +6,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.lvyahui8/spring-boot-data-aggregator-starter)
 [![GitHub release](https://img.shields.io/github/release/lvyahui8/spring-boot-data-aggregator.svg)](https://github.com/lvyahui8/spring-boot-data-aggregator/releases)
 
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
+
 ## Background and purpose
 
 When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.
@@ -110,15 +113,11 @@ public class UserServiceImpl implements UserService {
 
 ### 2. Call the aggregation interface
 
-```java
-@Autowired
-DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
-```
-
 #### Method 1: Functional call
 
+
 ```java
-User user = dataBeanAggregateQueryFacade.get(
+User user = DataFacade.get(
      Collections.singletonMap("userId", 1L), 
      new Function2<User, List<Post>, User>() {
             @Override
@@ -152,8 +151,7 @@ public class UserAggregate {
 Specify queried data id, invoke parameters, and return type to invoke `facade.get` method
 
 ```java
-DataBeanAggregateQueryFacade queryFacade = context.getBean(DataBeanAggregateQueryFacade.class);
-User user = queryFacade.get(/*data id*/ "userWithPosts",
+User user = DataFacade.get(/*data id*/ "userWithPosts",
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L),
                             User.class);
