@@ -72,7 +72,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 
 ### 3. 查询
 
-Spring Bean `DataBeanAggregateQueryFacade` 查询指定的数据的门面
+通过 `DataFacade.get` 静态门面查询指定数据
 
 ## 示例
 
