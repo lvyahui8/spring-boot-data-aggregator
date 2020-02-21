@@ -75,7 +75,7 @@ io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
 
 ### 3. Query
 
-Spring Bean `dataBeanAggregateQueryFacade` query data facade API
+Query the specified data via `DataFacade.get` static facade
 
 ## Example
 

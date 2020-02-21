@@ -19,7 +19,7 @@ public class ExampleApplication {
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = null;
         try{
-            context =  SpringApplication.run(ExampleApplication.class);
+            context =  SpringApplication.run(ExampleApplication.class,args);
         } finally {
             if(context != null) {
                 ExecutorService executorService = (ExecutorService) context.getBean("aggregateExecutorService");
