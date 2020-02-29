@@ -25,7 +25,7 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
 - **Unlimited nesting**
 
-  Dependencies support deep nesting. The follow example has only one layer nesting relationship.
+  Dependencies support deep nesting. The following example has only one layer of nesting relationship.
 
 - **Exception handling**
 
@@ -33,11 +33,11 @@ Of course, in an extremely high concurrent scenario, the parallel call interface
 
   Ignore means that the provider method ignores the exception and returns a null value when it is executed. Stop means that once a provider method throws an exception, it will be thrown up step by step, and stop subsequent processing.
 
-  Exception handling configuration item supports consumer level or global level, and comsumer level is priority to global level
+  Exception handling configuration item supports consumer level or global level, and consumer level is priority to global level
 
 - **Query Cache**
 
-  In one query life cycle of calling the Facade's query method, the result called by DataProvider method may be reused. As long as the method signature and the parameters are consistent, the default method is idempotent, and the cached query result will be used directly.** However, this Not an absolute.  Considering the multi-threading feature, sometimes the cache is not used.
+  In one query life cycle of calling the Facade's query method, the result called by `@DataProvider` method may be reused. As long as the method signature and the parameters are consistent, the default method is idempotent, and the cached query result will be used directly.** However, this Not an absolute.  Considering the multi-threading feature, sometimes the cache is not used.
 
 - **Timeout Control**
 
@@ -83,7 +83,7 @@ Developing a user summary data interface that includes the user's basic informat
 
 ### 1. Define an "atomic" service to provide user data
 
-Use `@DataProvider` to define the interface a data provider.
+Use `@DataProvider` to define the interface as a data provider.
 
 Use `@InvokeParameter` to specify the input parameters to pass.
 
@@ -128,7 +128,7 @@ User user = DataFacade.get(
             }
      });
 Assert.notNull(user,"User must not be NULL");
-Assert.notNull(user.getPosts(),"User posts must not be NULL");
+Assert.notNull(user.getPosts(),"User's posts must not be NULL");
 ```
 
 ####  Method 2: Define and implement an aggregation layer
@@ -156,7 +156,7 @@ User user = DataFacade.get(/*data id*/ "userWithPosts",
                             Collections.singletonMap("userId",1L),
                             User.class);
 Assert.notNull(user,"User must not be NULL");
-Assert.notNull(user.getPosts(),"User posts must not be NULL");
+Assert.notNull(user.getPosts(),"User's posts must not be NULL");
 ```
 
 **Invoke result**
