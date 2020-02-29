@@ -127,8 +127,8 @@ User user = DataFacade.get(
                 return user;
             }
      });
-Assert.notNull(user,"user not null");
-Assert.notNull(user.getPosts(),"user posts not null");
+Assert.notNull(user,"User must not be NULL");
+Assert.notNull(user.getPosts(),"User posts must not be NULL");
 ```
 
 ####  Method 2: Define and implement an aggregation layer
@@ -155,8 +155,8 @@ User user = DataFacade.get(/*data id*/ "userWithPosts",
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L),
                             User.class);
-Assert.notNull(user,"user not null");
-Assert.notNull(user.getPosts(),"user posts not null");
+Assert.notNull(user,"User must not be NULL");
+Assert.notNull(user.getPosts(),"User posts must not be NULL");
 ```
 
 **Invoke result**

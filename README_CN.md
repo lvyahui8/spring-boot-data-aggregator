@@ -125,8 +125,8 @@ User user = DataFacade.get(
                 return user;
             }
      });
-Assert.notNull(user,"user not null");
-Assert.notNull(user.getPosts(),"user posts not null");
+Assert.notNull(user,"User must not be NULL");
+Assert.notNull(user.getPosts(),"User posts must not be NULL");
 ```
 
 #### 方式二: 定义聚合层查询
@@ -153,8 +153,8 @@ User user = DataFacade.get(/*data id*/ "userWithPosts",
                             /*Invoke Parameters*/
                             Collections.singletonMap("userId",1L), 
                             User.class);
-Assert.notNull(user,"user not null");
-Assert.notNull(user.getPosts(),"user posts not null");
+Assert.notNull(user,"User must not be NULL");
+Assert.notNull(user.getPosts(),"User posts must not be NULL");
 ```
 
 **运行结果**
