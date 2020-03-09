@@ -11,11 +11,9 @@
 
 ## Background and purpose
 
-When developing the background interface, in order to improve the  development efficiency, we often write serial execution codes to call different interfaces, even if there is no dependency among these interfaces, which causes the last developed interface performance is low, and the data is not convenient to reuse.
+Annotation-based parallel dependency injection (calling). Think of it as an upgraded version of the Spring `@Async` annotation.
 
-**This framework is designed to support parallel and data reuse while maintaining the development efficiency.**
-
-Of course, in an extremely high concurrent scenario, the parallel call interface is not that helpful for performance improvement.   However, it doesn't mean that this project is meaningless  because most applications in the Internet don't have very high concurrent traffic.
+![image-20200309230301680](README_EN.assets/image-20200309230301680.png)
 
 ## Features
 

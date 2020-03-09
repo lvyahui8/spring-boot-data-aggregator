@@ -9,13 +9,11 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
 
-## 背景与目的
+## 简介
 
-在开发后台接口时, 为了开发效率, 我们往往习惯编写串行执行的代码, 去调用不同的接口, 即使这些接口之间并无依赖,  这使得最后开发的接口性能低下, 且数据不方便复用
+基于注解实现并行地依赖注入（调用），可以看做 Spring `@Async` 注解的升级版。
 
-**此框架目的旨在保持开发效率的同时, 很方便地支持并行和数据复用**
-
-当然, 在极端高并发的场景下,CPU很可能已经跑满, 并行调用接口对性能提升并不明显, 但不代表这个项目没有价值. 因为互联网世界的大部分应用, 并不会有非常高的并发访问量
+![image-20200309230202047](README.assets/image-20200309230202047.png)
 
 ## 特性
 
