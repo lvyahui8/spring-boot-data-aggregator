@@ -9,8 +9,6 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
 
-## Background and purpose
-
 Annotation-based parallel dependency injection (calling). Think of it as an upgraded version of the Spring `@Async` annotation.
 
 ![image-20200309230301680](README_EN.assets/image-20200309230301680.png)

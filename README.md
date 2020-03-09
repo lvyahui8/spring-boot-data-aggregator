@@ -9,8 +9,6 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/lvyahui8/spring-boot-data-aggregator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lvyahui8/spring-boot-data-aggregator/context:java)
 
-## 简介
-
 基于注解实现并行地依赖注入（调用），可以看做 Spring `@Async` 注解的升级版。
 
 ![image-20200309230202047](README.assets/image-20200309230202047.png)
