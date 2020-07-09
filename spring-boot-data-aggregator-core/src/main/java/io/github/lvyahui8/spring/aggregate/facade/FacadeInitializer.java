@@ -1,6 +1,4 @@
-package io.github.lvyahui8.spring.facade;
-
-import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
+package io.github.lvyahui8.spring.aggregate.facade;
 
 /**
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)

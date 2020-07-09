@@ -1,10 +1,7 @@
-package io.github.lvyahui8.spring.facade;
+package io.github.lvyahui8.spring.aggregate.facade;
 
 import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -15,9 +12,16 @@ import java.util.Map;
  */
 public class DataFacade {
 
-    @Setter(AccessLevel.PACKAGE)
-    @Getter(AccessLevel.PACKAGE)
+
     private static DataBeanAggregateQueryFacade facade;
+
+    static void setFacade(DataBeanAggregateQueryFacade facade) {
+        DataFacade.facade = facade;
+    }
+
+    static DataBeanAggregateQueryFacade getFacade() {
+        return facade;
+    }
 
     public static <T> T get(String id, Map<String,Object> invokeParams, Class<T> clazz)
             throws InterruptedException, IllegalAccessException, InvocationTargetException {

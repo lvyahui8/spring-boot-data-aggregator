@@ -14,8 +14,7 @@ import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import io.github.lvyahui8.spring.annotation.DataProvider;
-import io.github.lvyahui8.spring.facade.FacadeInitializer;
-import lombok.extern.slf4j.Slf4j;
+import io.github.lvyahui8.spring.aggregate.facade.FacadeInitializer;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -49,7 +48,6 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(BeanAggregateProperties.class)
-@Slf4j
 public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
@@ -94,7 +92,6 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
             return ;
         }
         visitStatusMap.put(node,1);
-        log.info("visited:{}", node);
         for (String relateNode : graphAdjMap.get(node)) {
             dfs(graphAdjMap,visitStatusMap,relateNode);
         }

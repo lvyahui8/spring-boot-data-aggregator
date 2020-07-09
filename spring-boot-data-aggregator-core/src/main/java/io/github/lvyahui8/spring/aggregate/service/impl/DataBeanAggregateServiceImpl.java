@@ -11,8 +11,6 @@ import io.github.lvyahui8.spring.aggregate.service.AbstractAsyncQueryTask;
 import io.github.lvyahui8.spring.aggregate.service.AsyncQueryTaskWrapper;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,26 +26,50 @@ import java.util.concurrent.*;
  * @author lvyahui (lvyahui8@gmail.com,lvyahui8@126.com)
  * @since 2019/6/2 21:50
  */
-@Slf4j
 public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
 
-    @Setter
+    
     private DataProviderRepository repository;
 
-    @Setter
+    
     private ApplicationContext applicationContext;
 
-    @Setter
+    
     private ExecutorService executorService;
 
-    @Setter
+    
     private RuntimeSettings runtimeSettings;
 
-    @Setter
+    
     private AggregateQueryInterceptorChain interceptorChain;
 
-    @Setter
+    
     private Class<? extends AsyncQueryTaskWrapper> taskWrapperClazz;
+
+    
+    public void setRepository(DataProviderRepository repository) {
+        this.repository = repository;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void setRuntimeSettings(RuntimeSettings runtimeSettings) {
+        this.runtimeSettings = runtimeSettings;
+    }
+
+    public void setInterceptorChain(AggregateQueryInterceptorChain interceptorChain) {
+        this.interceptorChain = interceptorChain;
+    }
+
+    public void setTaskWrapperClazz(Class<? extends AsyncQueryTaskWrapper> taskWrapperClazz) {
+        this.taskWrapperClazz = taskWrapperClazz;
+    }
 
     private AggregationContext initQueryContext(DataProvideDefinition rootProvider, Map<InvokeSignature,Object> queryCache) {
         AggregationContext aggregationContext = new AggregationContext();

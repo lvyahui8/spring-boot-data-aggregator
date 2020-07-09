@@ -13,7 +13,7 @@ import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import io.github.lvyahui8.spring.example.model.Category;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
-import io.github.lvyahui8.spring.facade.DataFacade;
+import io.github.lvyahui8.spring.aggregate.facade.DataFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
