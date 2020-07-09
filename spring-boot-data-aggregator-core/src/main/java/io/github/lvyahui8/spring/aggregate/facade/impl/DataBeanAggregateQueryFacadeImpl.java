@@ -57,9 +57,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
 
             return ret;
         } finally {
-            if(! accessible) {
-                applyMethod.setAccessible(accessible);
-            }
+            applyMethod.setAccessible(accessible);
         }
     }
 }
