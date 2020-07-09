@@ -57,7 +57,7 @@ application.properties
 
 ```properties
 # 指定要扫描注解的包
-io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
+spring.data.aggregator.base-packages=io.github.lvyahui8.spring.example
 ```
 
 ### 2. 添加注解

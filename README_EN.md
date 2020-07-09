@@ -58,7 +58,7 @@ application.properties
 
 ```properties
 # Specify the package to scan the annotations
-io.github.lvyahui8.spring.base-packages=io.github.lvyahui8.spring.example
+spring.data.aggregator.base-packages=io.github.lvyahui8.spring.example
 ```
 
 ### 2. Annotation
