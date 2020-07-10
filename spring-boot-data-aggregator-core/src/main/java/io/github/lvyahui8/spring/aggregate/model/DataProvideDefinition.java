@@ -17,6 +17,10 @@ public class DataProvideDefinition {
     private List<InvokeParameterDefinition> params;
     private List<MethodArg>                 methodArgs;
     private boolean                         idempotent;
+    /**
+     * 作为id的一部分，当id可能出现冲突时， 可以指明class。
+     */
+    private Class<?>                        belongClass;
 
     public String getId() {
         return id;
@@ -80,5 +84,13 @@ public class DataProvideDefinition {
 
     public void setIdempotent(boolean idempotent) {
         this.idempotent = idempotent;
+    }
+
+    public Class<?> getBelongClass() {
+        return belongClass;
+    }
+
+    public void setBelongClass(Class<?> belongClass) {
+        this.belongClass = belongClass;
     }
 }
