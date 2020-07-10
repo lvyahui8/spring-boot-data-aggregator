@@ -1,8 +1,8 @@
 package io.github.lvyahui8.spring.autoconfigure;
 
 import io.github.lvyahui8.spring.aggregate.config.RuntimeSettings;
-import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
-import io.github.lvyahui8.spring.aggregate.facade.impl.DataBeanAggregateQueryFacadeImpl;
+import io.github.lvyahui8.spring.aggregate.facade.DataAggregateQueryFacade;
+import io.github.lvyahui8.spring.aggregate.facade.impl.DataAggregateQueryFacadeImpl;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptor;
 import io.github.lvyahui8.spring.aggregate.interceptor.AggregateQueryInterceptorChain;
 import io.github.lvyahui8.spring.aggregate.interceptor.impl.AggregateQueryInterceptorChainImpl;
@@ -14,7 +14,7 @@ import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
 import io.github.lvyahui8.spring.aggregate.service.impl.DataBeanAggregateServiceImpl;
 import io.github.lvyahui8.spring.aggregate.util.DefinitionUtils;
 import io.github.lvyahui8.spring.annotation.DataProvider;
-import io.github.lvyahui8.spring.aggregate.facade.FacadeInitializer;
+import io.github.lvyahui8.spring.aggregate.facade.StaticFacadeInitializer;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -61,10 +61,10 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnMissingBean
-    public DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade(
+    public DataAggregateQueryFacade dataBeanAggregateQueryFacade(
             @Qualifier("dataProviderRepository") DataProviderRepository dataProviderRepository) {
-        DataBeanAggregateQueryFacadeImpl facade = new DataBeanAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
-        FacadeInitializer.initFacade(facade);
+        DataAggregateQueryFacadeImpl facade = new DataAggregateQueryFacadeImpl(dataBeanAggregateQueryService(dataProviderRepository));
+        StaticFacadeInitializer.initFacade(facade);
         return facade;
     }
 

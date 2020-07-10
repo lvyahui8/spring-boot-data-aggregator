@@ -1,6 +1,6 @@
 package io.github.lvyahui8.spring.example.facade;
 
-import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
+import io.github.lvyahui8.spring.aggregate.facade.DataAggregateQueryFacade;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
 import io.github.lvyahui8.spring.example.service.FollowService;
@@ -28,7 +28,7 @@ public class UserQueryFacade {
     private UserService userService;
 
     @Autowired
-    private DataBeanAggregateQueryFacade dataBeanAggregateQueryFacade;
+    private DataAggregateQueryFacade dataAggregateQueryFacade;
 
     public User getUserData(Long userId) {
         User user = userService.get(userId);
@@ -70,7 +70,7 @@ public class UserQueryFacade {
 
     public User getUserFinal(Long userId) throws InterruptedException,
             IllegalAccessException, InvocationTargetException {
-        return dataBeanAggregateQueryFacade.get("userFullData",
+        return dataAggregateQueryFacade.get("userFullData",
                 Collections.singletonMap("userId", userId), User.class);
     }
 }

@@ -13,7 +13,7 @@ import io.github.lvyahui8.spring.example.facade.UserQueryFacade;
 import io.github.lvyahui8.spring.example.model.Category;
 import io.github.lvyahui8.spring.example.model.Post;
 import io.github.lvyahui8.spring.example.model.User;
-import io.github.lvyahui8.spring.aggregate.facade.DataFacade;
+import io.github.lvyahui8.spring.aggregate.facade.DataQueryStaticFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
-public class DataBeanAggregateQueryFacadeTest {
+public class DataQueryStaticFacadeTest {
 
     private static final int NUM = 100;
 
@@ -46,7 +46,7 @@ public class DataBeanAggregateQueryFacadeTest {
     @Test
     public void testSample() throws Exception {
         {
-            User user = DataFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
+            User user = DataQueryStaticFacade.get("userWithPosts", Collections.singletonMap("userId",1L), User.class);
             Assert.notNull(user,"user not null");
             Assert.notNull(user.getPosts(),"user posts not null");
             log.info("user.name:{},user.posts.size:{}",
@@ -64,7 +64,7 @@ public class DataBeanAggregateQueryFacadeTest {
 
         {
             for (int i = 0; i < NUM; i ++) {
-                String s = DataFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
+                String s = DataQueryStaticFacade.get("categoryTitle", Collections.singletonMap("categoryId", 1L), String.class);
                 Assert.isTrue(org.apache.commons.lang3.StringUtils.isNotEmpty(s),"s  not null");
             }
         }
@@ -75,13 +75,13 @@ public class DataBeanAggregateQueryFacadeTest {
         boolean success = false;
         if(! beanAggregateProperties.isIgnoreException()) {
             try {
-                DataFacade.get("userWithPosts",
+                DataQueryStaticFacade.get("userWithPosts",
                         Collections.singletonMap("userId", 1L), User.class);
             } catch (Exception e) {
                 log.info("default settings is SUSPEND, catch an exception: {}",e.getMessage(),e);
             }
         } else {
-            User user = DataFacade.get("userWithPosts",
+            User user = DataQueryStaticFacade.get("userWithPosts",
                     Collections.singletonMap("userId", 1L), User.class);
             Assert.notNull(user,"user must be not null!");
         }
@@ -90,7 +90,7 @@ public class DataBeanAggregateQueryFacadeTest {
     @Test
     public void testGetByMultipleArgumentsFunction() throws Exception {
         Map<String, Object> singletonMap = Collections.singletonMap("userId", 1L);
-        User user = DataFacade.get(singletonMap, new Function2<User, List<Post>, User>() {
+        User user = DataQueryStaticFacade.get(singletonMap, new Function2<User, List<Post>, User>() {
             @Override
             public User apply(@DataConsumer("user") User user, @DataConsumer("posts") List<Post> posts) {
                 user.setPosts(posts);
@@ -99,7 +99,7 @@ public class DataBeanAggregateQueryFacadeTest {
         },null);
         Assert.notNull(user,"user never not be null!");
         try {
-            user = DataFacade.get(singletonMap, (Function2<User, List<Post>, User>) (user1, posts) -> {
+            user = DataQueryStaticFacade.get(singletonMap, (Function2<User, List<Post>, User>) (user1, posts) -> {
                 user1.setPosts(posts);
                 return user1;
             },null);
@@ -115,7 +115,7 @@ public class DataBeanAggregateQueryFacadeTest {
             user.setUsername("bob");
             user.setId(100000L);
             ExampleAppContext.setLoggedUser(user);
-            DataFacade.get(null, new Function2<String,List<User>,User>() {
+            DataQueryStaticFacade.get(null, new Function2<String,List<User>,User>() {
                 @Override
                 public User apply(@DataConsumer("loggedUsername") String loggedUsername,
                                   @DataConsumer("loggedUserFollowers") List<User> loggedUserFollowers) {
@@ -135,7 +135,7 @@ public class DataBeanAggregateQueryFacadeTest {
     public void testThreadLocal() throws Exception {
         try {
             RequestContext.setTenantId(10000L);
-            Object result = DataFacade.get(null,
+            Object result = DataQueryStaticFacade.get(null,
                     new Function3<List<Category>, List<Post>, List<User>, Object>() {
                 @Override
                 public Object apply(
@@ -158,7 +158,7 @@ public class DataBeanAggregateQueryFacadeTest {
                 .put("userA_Id", 1L)
                 .put("userB_Id", 2L)
                 .put("userC_Id", 3L).build();
-        Object specialUserCollection = DataFacade.get(params,
+        Object specialUserCollection = DataQueryStaticFacade.get(params,
                 new Function3<User,User,User,Object>() {
                     @Override
                     public Object apply(
@@ -178,7 +178,7 @@ public class DataBeanAggregateQueryFacadeTest {
     @Test
     public void testParameterTypeException() throws Exception {
         try{
-            DataFacade.get(Collections.singletonMap("userId", "1"),
+            DataQueryStaticFacade.get(Collections.singletonMap("userId", "1"),
                     new Function2<User, List<Post>, User>() {
                         @Override
                         public User apply(@DataConsumer("user") User user,
@@ -206,7 +206,7 @@ public class DataBeanAggregateQueryFacadeTest {
         Exception exp = null;
         for (int i = 0; i < 1000; i ++) {
             try {
-                String name =  DataFacade.get(map,userFunction);
+                String name =  DataQueryStaticFacade.get(map,userFunction);
             } catch (Exception e) {
                 exp = e;
                 log.error("exp:" + e.getMessage());
