@@ -10,22 +10,16 @@ import javax.swing.*;
  * @author: LiHaiQing
  * @date: 2020/4/2 20:45
  */
-public enum IconEnum {
+public interface IconEnum {
 
     /***
      *
      */
-    DATA_CONSUMER("/icons/dataConsumer@16.svg"),
-    DATA_PROVIDER("/icons/dataProvider@18.svg");
+    Icon data_consumer = loadIcon("/icons/dataConsumer@16.svg");
+    Icon data_provider = loadIcon("/icons/dataProvider@18.svg");
 
-    private String path;
 
-    IconEnum(String path) {
-        this.path = path;
-    }
-
-    public Icon getIcon() {
+    static Icon loadIcon(String path) {
         return IconManager.getInstance().getIcon(path, IconEnum.class);
     }
-
 }
