@@ -172,3 +172,4 @@ Assert.notNull(user.getPosts(),"User's posts must not be NULL");
 
 - Feego(lvyauhi8@gmail.com)
 - Iris G
+- Snoopy ([@snoopylovefiona](http://github.com/snoopylovefiona))

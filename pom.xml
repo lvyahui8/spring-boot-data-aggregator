@@ -26,6 +26,7 @@ limitations under the License.
         <module>spring-boot-data-aggregator-autoconfigure</module>
         <module>spring-boot-data-aggregator-example</module>
         <module>spring-boot-data-aggregator-starter</module>
+        <module>spring-boot-data-aggregator-assistant</module>
     </modules>
     <packaging>pom</packaging>
 

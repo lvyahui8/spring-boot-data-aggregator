@@ -173,5 +173,5 @@ As you can see, `user` interface  and `posts` interface are executed by the asyn
 ## Contributors
 
 - Feego (lvyauhi8@gmail.com)
-
 - Iris G
+- Snoopy ([@snoopylovefiona](http://github.com/snoopylovefiona))
