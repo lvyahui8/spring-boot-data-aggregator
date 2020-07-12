@@ -94,7 +94,7 @@ public class DataConsumerNavigation extends BaseNavigation {
 
     private static void addConstructorArgsGutterIcon(Collection<? super RelatedItemLineMarkerInfo> result, PsiElement psiIdentifier, NotNullLazyValue<Collection<? extends SpringBeanPointer>> targets) {
         SpringGutterIconBuilder<SpringBeanPointer> builder = SpringGutterIconBuilder
-                .createBuilder(IconEnum.DATA_CONSUMER.getIcon(), NavigationGutterIconBuilderUtil.BEAN_POINTER_CONVERTER, NavigationGutterIconBuilderUtil.AUTOWIRED_BEAN_POINTER_GOTO_PROVIDER);
+                .createBuilder(IconEnum.data_consumer, NavigationGutterIconBuilderUtil.BEAN_POINTER_CONVERTER, NavigationGutterIconBuilderUtil.AUTOWIRED_BEAN_POINTER_GOTO_PROVIDER);
         builder.setTargets(targets)
                 .setCellRenderer(SpringBeansPsiElementCellRenderer.INSTANCE)
                 .setPopupTitle(SpringBundle.message("spring.bean.constructor.navigate.choose.class.title", new Object[0]))
@@ -190,7 +190,7 @@ public class DataConsumerNavigation extends BaseNavigation {
     private static void addDataConsumerCandidatesBeanGutterIcon(
             Collection<? super RelatedItemLineMarkerInfo> result, PsiMethod method, PsiElement identifier) {
         SpringGutterIconBuilder<PsiElement> builder = SpringGutterIconBuilder
-                .createBuilder(IconEnum.DATA_PROVIDER.getIcon());
+                .createBuilder(IconEnum.data_provider);
         builder.setPopupTitle(SpringBundle.message("gutter.choose.autowired.candidates.title", new Object[0]))
                 .setEmptyPopupText(SpringBundle.message("gutter.navigate.no.matching.autowired.candidates", new Object[0]))
                 .setTooltipText(SpringBundle.message("gutter.navigate.to.autowired.candidates.title", new Object[0]))
@@ -258,7 +258,7 @@ public class DataConsumerNavigation extends BaseNavigation {
     @Nullable
     @Override
     public Icon getIcon() {
-        return IconEnum.DATA_CONSUMER.getIcon();
+        return IconEnum.data_consumer;
     }
 
     @Override

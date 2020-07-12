@@ -39,7 +39,7 @@ public class AssistantLineMarkerProvider extends RelatedItemLineMarkerProvider {
                 if (targets.size() > 0) {
 //                    打标
                     NavigationGutterIconBuilder<PsiElement> builder =
-                            NavigationGutterIconBuilder.create(IconEnum.DATA_CONSUMER.getIcon()).
+                            NavigationGutterIconBuilder.create(IconEnum.data_consumer).
                                     setTargets(targets).
                                     setTooltipText("Navigate to a simple property");
                     result.add(builder.createLineMarkerInfo(element));

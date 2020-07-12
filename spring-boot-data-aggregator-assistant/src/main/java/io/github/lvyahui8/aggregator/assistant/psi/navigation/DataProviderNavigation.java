@@ -151,7 +151,7 @@ public class DataProviderNavigation extends BaseNavigation {
     private static void addDataProviderCandidatesBeanGutterIcon(
             Collection<? super RelatedItemLineMarkerInfo> result, PsiMethod method, PsiElement identifier) {
         SpringGutterIconBuilder<PsiElement> builder = SpringGutterIconBuilder
-                .createBuilder(IconEnum.DATA_PROVIDER.getIcon());
+                .createBuilder(IconEnum.data_provider);
         builder.setPopupTitle(SpringBundle.message("gutter.choose.autowired.candidates.title", new Object[0]))
                 .setEmptyPopupText(SpringBundle.message("gutter.navigate.no.matching.autowired.candidates", new Object[0]))
                 .setTooltipText(SpringBundle.message("gutter.navigate.to.autowired.candidates.title", new Object[0]))
@@ -218,7 +218,7 @@ public class DataProviderNavigation extends BaseNavigation {
     @Nullable
     @Override
     public Icon getIcon() {
-        return IconEnum.DATA_PROVIDER.getIcon();
+        return IconEnum.data_provider;
     }
 
     @Override
