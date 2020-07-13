@@ -1,17 +1,16 @@
 <idea-plugin>
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>io.github.lvyahui8.aggregator.support</id>
+  <name>Data Aggregator Support</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="lvyahui8@gmail.com" url="https://github.com/lvyahui8/">Feego</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Support for Spring-boot-data-aggregator.<br>
+      https://github.com/lvyahui8/spring-boot-data-aggregator
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      Initialized an Intellij IDEA plugin for Spring-boot-data-aggregator support.
     ]]>
   </change-notes>
 
@@ -21,13 +20,21 @@
   <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
   <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
+  <depends>com.intellij.spring</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
-  </extensions>
+    <!-- Add your extensions here -->
+    <semContributor implementation="io.github.lvyahui8.aggregator.assistant.psi.contributor.DataProviderSemContributor"/>
+    <semContributor implementation="io.github.lvyahui8.aggregator.assistant.psi.contributor.DataConsumerSemContributor"/>
+    <codeInsight.lineMarkerProvider language="JAVA" implementationClass="io.github.lvyahui8.aggregator.assistant.psi.navigation.DataProviderNavigation"/>
+    <codeInsight.lineMarkerProvider language="JAVA" implementationClass="io.github.lvyahui8.aggregator.assistant.psi.navigation.DataConsumerNavigation"/>
+   </extensions>
 
   <actions>
     <!-- Add your actions here -->
+
   </actions>
 
 </idea-plugin>

@@ -15,7 +15,7 @@
 
 
     <properties>
-        <!--https://plugins.jetbrains.com/plugin/7127-intellij-plugin-development-with-maven-->
+        <!-- https://plugins.jetbrains.com/plugin/7127-intellij-plugin-development-with-maven -->
         <ij.plugin>true</ij.plugin>
         <IDEA_HOME>C:\Program Files\JetBrains\IntelliJ IDEA 2020.1.1</IDEA_HOME>
     </properties>
@@ -44,7 +44,10 @@
     <build>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
-
+<!--                <plugin>-->
+<!--                    <groupId>com.guidewire.build</groupId>-->
+<!--                    <artifactId>ijplugin-maven-plugin</artifactId>-->
+<!--                </plugin>-->
             </plugins>
         </pluginManagement>
     </build>
