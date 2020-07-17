@@ -10,4 +10,4 @@ target
 *.versionsBackup
 .gradle
 lib
-build
+build/*
