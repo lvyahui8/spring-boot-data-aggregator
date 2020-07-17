@@ -8,3 +8,6 @@ target
 *.7z
 *.iml
 *.versionsBackup
+.gradle
+lib
+build

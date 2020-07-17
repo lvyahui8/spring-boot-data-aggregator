@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>io.github.lvyahui8.aggregator.assistant</id>
+    <name>Data Aggregator Assistant</name>
+    <vendor email="lvyahui8@gmail.com" url="https://github.com/lvyahui8/">Feego</vendor>
+
+    <description><![CDATA[
+      Support for Spring-boot-data-aggregator.<br>
+      https://github.com/lvyahui8/spring-boot-data-aggregator
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.spring</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <!-- LangExtensionPoints begin -->
+        <semContributor implementation="io.github.lvyahui8.aggregator.assistant.psi.contributor.DataProviderSemContributor"/>
+        <semContributor implementation="io.github.lvyahui8.aggregator.assistant.psi.contributor.DataConsumerSemContributor"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="io.github.lvyahui8.aggregator.assistant.psi.navigation.DataProviderNavigation"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="io.github.lvyahui8.aggregator.assistant.psi.navigation.DataConsumerNavigation"/>
+        <!-- LangExtensionPoints end -->
+
+        <projectService serviceInterface="io.github.lvyahui8.aggregator.assistant.service.AggregatorProjectService"
+                        serviceImplementation="io.github.lvyahui8.aggregator.assistant.service.impl.AggregatorProjectServiceImpl"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="AggregatorAssistant.ConsumerIdFocusAction"
+                class="io.github.lvyahui8.aggregator.assistant.action.ConsumerIdFocusAction"
+                text="Consumer Focus"
+                description="Handle consumer on focus consumer">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>

@@ -18,7 +18,7 @@ import com.intellij.spring.impl.SpringAutoConfiguredModels;
 import com.intellij.spring.model.SpringBeanPointer;
 import com.intellij.spring.model.utils.SpringCommonUtils;
 import com.intellij.spring.model.utils.SpringModelUtils;
-import io.github.lvyahui8.aggregator.assistant.enums.IconEnum;
+import io.github.lvyahui8.aggregator.assistant.constants.AssistantIcons;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.provider.DataProviderJam;
 import io.github.lvyahui8.aggregator.assistant.utils.DataProviderUtil;
 import io.github.lvyahui8.aggregator.assistant.utils.NavigationGutterIconBuilderUtil;
@@ -151,7 +151,7 @@ public class DataProviderNavigation extends BaseNavigation {
     private static void addDataProviderCandidatesBeanGutterIcon(
             Collection<? super RelatedItemLineMarkerInfo> result, PsiMethod method, PsiElement identifier) {
         SpringGutterIconBuilder<PsiElement> builder = SpringGutterIconBuilder
-                .createBuilder(IconEnum.data_provider);
+                .createBuilder(AssistantIcons.data_provider);
         builder.setPopupTitle(SpringBundle.message("gutter.choose.autowired.candidates.title", new Object[0]))
                 .setEmptyPopupText(SpringBundle.message("gutter.navigate.no.matching.autowired.candidates", new Object[0]))
                 .setTooltipText(SpringBundle.message("gutter.navigate.to.autowired.candidates.title", new Object[0]))
@@ -218,7 +218,7 @@ public class DataProviderNavigation extends BaseNavigation {
     @Nullable
     @Override
     public Icon getIcon() {
-        return IconEnum.data_provider;
+        return AssistantIcons.data_provider;
     }
 
     @Override

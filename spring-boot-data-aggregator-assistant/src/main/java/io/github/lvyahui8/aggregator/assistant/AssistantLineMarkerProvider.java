@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLiteralExpression;
 import com.intellij.psi.impl.compiled.ClsTypeParameterImpl;
 import com.intellij.psi.impl.source.tree.java.PsiJavaTokenImpl;
-import io.github.lvyahui8.aggregator.assistant.enums.IconEnum;
+import io.github.lvyahui8.aggregator.assistant.constants.AssistantIcons;
 import io.github.lvyahui8.aggregator.assistant.utils.AssistantUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +39,7 @@ public class AssistantLineMarkerProvider extends RelatedItemLineMarkerProvider {
                 if (targets.size() > 0) {
 //                    打标
                     NavigationGutterIconBuilder<PsiElement> builder =
-                            NavigationGutterIconBuilder.create(IconEnum.data_consumer).
+                            NavigationGutterIconBuilder.create(AssistantIcons.data_consumer).
                                     setTargets(targets).
                                     setTooltipText("Navigate to a simple property");
                     result.add(builder.createLineMarkerInfo(element));

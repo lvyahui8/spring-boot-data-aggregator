@@ -1,4 +1,4 @@
-package io.github.lvyahui8.aggregator.assistant.constant;
+package io.github.lvyahui8.aggregator.assistant.constants;
 
 /**
  * @version V0.1.0

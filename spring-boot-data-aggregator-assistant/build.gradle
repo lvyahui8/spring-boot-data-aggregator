@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.21'
+}
+
+group 'io.github.lvyahui8'
+version '1.0.0-SNAPSHOT'
+compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = 1.8
+
+repositories {
+    // maven { url 'D:\\work\\spring-boot-data-aggregator\\spring-boot-data-aggregator-assistant\\lib\\ideaIC-2020.1.3.zip'}
+    maven { url 'https://maven.aliyun.com/repository/public'}
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service'}
+    maven { url 'https://cache-redirector.jetbrains.com/jetbrains.bintray.com/intellij-plugin-service' }
+    maven { url 'https://cache-redirector.jetbrains.com/repo1.maven.org/maven2' }
+    maven { url 'https://cache-redirector.jetbrains.com/jcenter.bintray.com' }
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.26'
+    compile group: 'io.github.lvyahui8', name: 'spring-boot-data-aggregator-core', version: '1.1.3'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    // version 'IU-2020.1.3'
+    localPath 'lib\\ideaIU-2020.1.3'
+    // version ideVersion("IU")
+    plugins = ['java', 'Spring']
+    updateSinceUntilBuild false
+    downloadSources = System.getenv("CI") == null
+}
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}

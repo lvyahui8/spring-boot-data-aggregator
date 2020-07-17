@@ -7,7 +7,7 @@ import com.intellij.patterns.PsiParameterPattern;
 import com.intellij.semantic.SemContributor;
 import com.intellij.semantic.SemRegistrar;
 import com.intellij.semantic.SemService;
-import io.github.lvyahui8.aggregator.assistant.constant.DataConsumerConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataConsumerConstant;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.consumer.DataConsumerJam;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.consumer.DataConsumerJamOld;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.parameter.DynamicParameterJam;

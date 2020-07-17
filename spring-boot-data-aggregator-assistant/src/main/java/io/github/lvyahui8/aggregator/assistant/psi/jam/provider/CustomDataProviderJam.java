@@ -11,7 +11,7 @@ import com.intellij.psi.ref.AnnotationChildLink;
 import com.intellij.semantic.SemKey;
 import com.intellij.spring.model.aliasFor.SpringAliasFor;
 import com.intellij.spring.model.aliasFor.SpringAliasForUtils;
-import io.github.lvyahui8.aggregator.assistant.constant.DataProviderConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataProviderConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

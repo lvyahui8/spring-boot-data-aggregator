@@ -12,7 +12,7 @@ import com.intellij.psi.ref.AnnotationChildLink;
 import com.intellij.semantic.SemKey;
 import com.intellij.spring.model.aliasFor.SpringAliasFor;
 import com.intellij.spring.model.aliasFor.SpringAliasForUtils;
-import io.github.lvyahui8.aggregator.assistant.constant.DataConsumerConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataConsumerConstant;
 
 /**
  * @version V0.1.0

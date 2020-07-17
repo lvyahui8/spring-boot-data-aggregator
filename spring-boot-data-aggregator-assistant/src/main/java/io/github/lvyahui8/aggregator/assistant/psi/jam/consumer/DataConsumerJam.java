@@ -6,7 +6,7 @@ import com.intellij.jam.JamStringAttributeElement;
 import com.intellij.jam.reflect.*;
 import com.intellij.psi.*;
 import com.intellij.semantic.SemKey;
-import io.github.lvyahui8.aggregator.assistant.constant.DataConsumerConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataConsumerConstant;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.parameter.DynamicParameterJam;
 
 import java.util.Objects;

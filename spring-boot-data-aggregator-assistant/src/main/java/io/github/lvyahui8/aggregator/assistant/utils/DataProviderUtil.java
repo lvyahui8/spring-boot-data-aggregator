@@ -30,8 +30,8 @@ import com.intellij.spring.model.utils.SpringModelUtils;
 import com.intellij.spring.model.xml.beans.SpringBean;
 import com.intellij.util.Query;
 import com.intellij.util.SmartList;
-import io.github.lvyahui8.aggregator.assistant.constant.DataConsumerConstant;
-import io.github.lvyahui8.aggregator.assistant.constant.DataProviderConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataConsumerConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataProviderConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

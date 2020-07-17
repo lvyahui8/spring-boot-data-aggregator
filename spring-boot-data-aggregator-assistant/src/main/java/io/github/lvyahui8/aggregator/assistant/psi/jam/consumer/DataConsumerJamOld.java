@@ -11,7 +11,7 @@ import com.intellij.psi.PsiTarget;
 import com.intellij.semantic.SemKey;
 import com.intellij.spring.model.jam.JamPsiMemberSpringBean;
 import com.intellij.spring.model.jam.javaConfig.SpringJavaBean;
-import io.github.lvyahui8.aggregator.assistant.constant.DataConsumerConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataConsumerConstant;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.parameter.DynamicParameterJam;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package io.github.lvyahui8.aggregator.assistant.enums;
+package io.github.lvyahui8.aggregator.assistant.constants;
 
 import com.intellij.ui.IconManager;
 
@@ -10,7 +10,7 @@ import javax.swing.*;
  * @author: LiHaiQing
  * @date: 2020/4/2 20:45
  */
-public interface IconEnum {
+public interface AssistantIcons {
 
     /***
      *
@@ -20,6 +20,6 @@ public interface IconEnum {
 
 
     static Icon loadIcon(String path) {
-        return IconManager.getInstance().getIcon(path, IconEnum.class);
+        return IconManager.getInstance().getIcon(path, AssistantIcons.class);
     }
 }

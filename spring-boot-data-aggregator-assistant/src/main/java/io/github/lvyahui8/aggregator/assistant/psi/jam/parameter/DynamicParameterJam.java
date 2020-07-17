@@ -10,7 +10,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementRef;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.semantic.SemKey;
-import io.github.lvyahui8.aggregator.assistant.constant.DynamicParameterConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DynamicParameterConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

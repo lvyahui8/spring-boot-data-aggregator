@@ -12,7 +12,7 @@ import com.intellij.spring.model.CommonSpringBean;
 import com.intellij.spring.model.SpringBeanPointer;
 import com.intellij.spring.model.xml.DomSpringBean;
 import com.intellij.util.NotNullFunction;
-import io.github.lvyahui8.aggregator.assistant.enums.IconEnum;
+import io.github.lvyahui8.aggregator.assistant.constants.AssistantIcons;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class NavigationGutterIconBuilderUtil {
         List<SpringBeanPointer> sorted = new ArrayList(collection);
         Collections.sort(sorted, SpringBeanPointer.DISPLAY_COMPARATOR);
         SpringGutterIconBuilder<SpringBeanPointer> builder = SpringGutterIconBuilder
-                .createBuilder(IconEnum.data_provider, BEAN_POINTER_CONVERTER,
+                .createBuilder(AssistantIcons.data_provider, BEAN_POINTER_CONVERTER,
                         AUTOWIRED_BEAN_POINTER_GOTO_PROVIDER);
         builder.setPopupTitle(SpringBundle.message("spring.bean.class.navigate.choose.class.title", new Object[0]))
                 .setCellRenderer(SpringBeansPsiElementCellRenderer.INSTANCE)

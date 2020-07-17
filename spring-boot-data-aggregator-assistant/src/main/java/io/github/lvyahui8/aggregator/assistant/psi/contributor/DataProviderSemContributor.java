@@ -11,7 +11,7 @@ import com.intellij.semantic.SemService;
 import com.intellij.spring.model.aliasFor.SpringAliasForUtils;
 import com.intellij.spring.model.jam.SpringSemContributorUtil;
 import com.intellij.util.Consumer;
-import io.github.lvyahui8.aggregator.assistant.constant.DataProviderConstant;
+import io.github.lvyahui8.aggregator.assistant.constants.DataProviderConstant;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.provider.CustomDataProviderJam;
 import io.github.lvyahui8.aggregator.assistant.psi.jam.provider.DataProviderJam;
 import org.jetbrains.annotations.NotNull;
@@ -45,14 +45,17 @@ public class DataProviderSemContributor  extends SemContributor {
         String dataProvider = DataProviderConstant.DATA_AGGREGATOR_DATA_PROVIDER;
 
         SpringSemContributorUtil.registerMetaComponents(semService, registrar, pattern, CustomDataProviderJam.META_KEY,
-                CustomDataProviderJam.JAM_KEY, SpringSemContributorUtil
-                        .createFunction(CustomDataProviderJam.JAM_KEY, CustomDataProviderJam.class,
-                                SpringSemContributorUtil.getCustomMetaAnnotations(dataProvider),
-                                (pair) -> {
-                                    return new CustomDataProviderJam(pair.first, (PsiMethod)pair.second);
-                                }, (Consumer)null, SpringAliasForUtils
-                                        .getAnnotationMetaProducer(CustomDataProviderJam.JAM_ANNOTATION_META_KEY,
-                                                new JamMemberMeta[] {DataProviderJam.METHOD_META})));
+                CustomDataProviderJam.JAM_KEY,
+                SpringSemContributorUtil.createFunction(CustomDataProviderJam.JAM_KEY, CustomDataProviderJam.class,
+                        SpringSemContributorUtil.getCustomMetaAnnotations(dataProvider),
+                        (pair) -> {
+                            return new CustomDataProviderJam(pair.first, (PsiMethod)pair.second);
+                        },
+                        (Consumer)null,
+                        SpringAliasForUtils.getAnnotationMetaProducer(CustomDataProviderJam.JAM_ANNOTATION_META_KEY,
+                                new JamMemberMeta[] {DataProviderJam.METHOD_META})
+                )
+        );
 
     }
 }
