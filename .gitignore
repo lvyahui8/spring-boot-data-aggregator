@@ -8,3 +8,6 @@ target
 *.7z
 *.iml
 *.versionsBackup
+.gradle
+spring-boot-data-aggregator-assistant/build
+spring-boot-data-aggregator-assistant/lib
