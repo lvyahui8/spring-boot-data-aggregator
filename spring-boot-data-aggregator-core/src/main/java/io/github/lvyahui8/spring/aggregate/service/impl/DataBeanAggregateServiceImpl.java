@@ -141,12 +141,16 @@ public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
             }
             Map<InvokeSignature, Object> queryCache = context.getCacheMap();
             /* 如果调用方法是幂等的, 那么当方法签名和方法参数完全一致时, 可以直接使用缓存结果 */
-            InvokeSignature invokeSignature = new InvokeSignature(provider.getMethod(),args);
-            Object resultModel;
-            if(provider.isIdempotent() && queryCache.containsKey(invokeSignature)) {
-                resultModel = queryCache.get(invokeSignature);
+            InvokeSignature invokeSignature = null;
+            Object resultModel = null;
+            if(provider.isIdempotent()) {
+                invokeSignature = new InvokeSignature(provider.getMethod(),args);
+                if (queryCache.containsKey(invokeSignature)) {
+                    resultModel = queryCache.get(invokeSignature);
+                }
             }
-            else {
+
+            if (resultModel == null ){
                 resultModel = provider.getMethod()
                         .invoke(provider.getTarget() == null
                                 ? applicationContext.getBean(provider.getMethod().getDeclaringClass())
