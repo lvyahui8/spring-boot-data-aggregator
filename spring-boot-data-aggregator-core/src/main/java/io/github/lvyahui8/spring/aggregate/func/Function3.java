@@ -5,6 +5,7 @@ package io.github.lvyahui8.spring.aggregate.func;
  * @since 2019/7/13 23:21
  */
 @FunctionalInterface
+@SuppressWarnings("unused")
 public interface Function3<T,U,V,R> extends MultipleArgumentsFunction<R> {
     /**
      * support three parameters
