@@ -175,17 +175,14 @@ public class BeanAggregateAutoConfiguration implements ApplicationContextAware {
     public AggregateQueryInterceptorChain aggregateQueryInterceptorChain() {
         Map<String, AggregateQueryInterceptor> interceptorMap = applicationContext.getBeansOfType(AggregateQueryInterceptor.class);
         AggregateQueryInterceptorChainImpl interceptorChain = new AggregateQueryInterceptorChainImpl();
-        if(interceptorMap != null  && ! interceptorMap.isEmpty()) {
+        if(! interceptorMap.isEmpty()) {
             List<AggregateQueryInterceptor> interceptors = new ArrayList<>(interceptorMap.values());
-            interceptors.sort(new Comparator<AggregateQueryInterceptor>() {
-                @Override
-                public int compare(AggregateQueryInterceptor o1, AggregateQueryInterceptor o2) {
-                    Order order1 = o1.getClass().getAnnotation(Order.class);
-                    Order order2 = o2.getClass().getAnnotation(Order.class);
-                    int oi1 = order1 == null ? Ordered.LOWEST_PRECEDENCE :  order1.value();
-                    int oi2 = order2 == null ?  Ordered.LOWEST_PRECEDENCE : order2.value();
-                    return oi1 - oi2;
-                }
+            interceptors.sort((o1, o2) -> {
+                Order order1 = o1.getClass().getAnnotation(Order.class);
+                Order order2 = o2.getClass().getAnnotation(Order.class);
+                int oi1 = order1 == null ? Ordered.LOWEST_PRECEDENCE :  order1.value();
+                int oi2 = order2 == null ?  Ordered.LOWEST_PRECEDENCE : order2.value();
+                return oi1 - oi2;
             });
             for (AggregateQueryInterceptor interceptor : interceptors) {
                 interceptorChain.addInterceptor(interceptor);
