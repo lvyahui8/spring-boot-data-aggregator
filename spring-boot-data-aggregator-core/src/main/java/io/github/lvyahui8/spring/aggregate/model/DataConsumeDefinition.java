@@ -11,7 +11,13 @@ import java.util.Map;
 @Data
 public class DataConsumeDefinition {
     private String             id;
+    /**
+     * consumer定义在那个接口类中
+     */
     private Class<?>           clazz;
+    /**
+     * 是否忽略consumer调用产生的异常
+     */
     private Boolean            ignoreException;
     private Map<String,String> dynamicParameterKeyMap;
     private String             originalParameterName;
