@@ -96,6 +96,7 @@ public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
             throws InterruptedException, InvocationTargetException, IllegalAccessException {
         Map<InvokeSignature, Object> queryCache = new ConcurrentHashMap<>(AggregationConstant.DEFAULT_INITIAL_CAPACITY);
         AggregationContext aggregationContext = initQueryContext(provider, queryCache);
+        aggregationContext.setInvokeParams(invokeParams);
         interceptorChain.applyQuerySubmitted(aggregationContext);
         try {
             return innerGet(provider,invokeParams,resultType,aggregationContext,null);

@@ -34,4 +34,8 @@ public class DataFacade {
         return facade.get(invokeParams,multipleArgumentsFunction,timeout);
     }
 
+    public static <T> T groupGet(String groupKey,Map<String,Object> invokeParams,Class<T> clazz)
+            throws InterruptedException, IllegalAccessException, InvocationTargetException {
+        throw new UnsupportedOperationException("Not yet supported");
+    }
 }

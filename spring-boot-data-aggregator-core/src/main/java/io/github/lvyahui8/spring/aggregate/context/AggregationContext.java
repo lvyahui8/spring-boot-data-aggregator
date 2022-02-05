@@ -24,4 +24,9 @@ public class AggregationContext {
      * 此次查询生命周期中的缓存
      */
     Map<InvokeSignature,Object> cacheMap;
+
+    /**
+     * 传入的参数
+     */
+    Map<String,Object> invokeParams;
 }
