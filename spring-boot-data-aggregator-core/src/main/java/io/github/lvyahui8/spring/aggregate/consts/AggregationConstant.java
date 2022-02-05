@@ -7,5 +7,5 @@ package io.github.lvyahui8.spring.aggregate.consts;
 public interface AggregationConstant
 {
     Object EMPTY_MODEL  = new Object();
-    int DEFAULT_INITIAL_CAPACITY = 8;
+    int DEFAULT_INITIAL_CAPACITY = 32;
 }
