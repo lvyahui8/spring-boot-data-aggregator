@@ -4,6 +4,7 @@ import io.github.lvyahui8.spring.aggregate.facade.DataBeanAggregateQueryFacade;
 import io.github.lvyahui8.spring.aggregate.func.MultipleArgumentsFunction;
 import io.github.lvyahui8.spring.aggregate.model.DataProvideDefinition;
 import io.github.lvyahui8.spring.aggregate.service.DataBeanAggregateService;
+import io.github.lvyahui8.spring.aggregate.service.ProviderService;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +21,11 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
 
     private final DataBeanAggregateService dataBeanAggregateService;
 
-    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateService dataBeanAggregateService) {
+    private final ProviderService providerService;
+
+    public DataBeanAggregateQueryFacadeImpl(DataBeanAggregateService dataBeanAggregateService,ProviderService providerService) {
         this.dataBeanAggregateService = dataBeanAggregateService;
+        this.providerService = providerService;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class DataBeanAggregateQueryFacadeImpl implements DataBeanAggregateQueryF
             invokeParams = Collections.emptyMap();
         }
 
-        DataProvideDefinition provider = dataBeanAggregateService.getProvider(multipleArgumentsFunction);
+        DataProvideDefinition provider = providerService.getProvider(multipleArgumentsFunction);
         Method applyMethod = provider.getMethod();
         boolean accessible = applyMethod.isAccessible();
         if(! accessible) {

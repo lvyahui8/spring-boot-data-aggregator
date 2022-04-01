@@ -57,33 +57,6 @@ public class DataBeanAggregateServiceImpl implements DataBeanAggregateService {
         return aggregationContext;
     }
 
-    @Override
-    public DataProvideDefinition getProvider(MultipleArgumentsFunction<?> multipleArgumentsFunction) throws IllegalAccessException {
-        DataProvideDefinition provider = repository.get(multipleArgumentsFunction.getClass().getName());
-        if(provider != null) {
-            return provider;
-        }
-        Method[] methods = multipleArgumentsFunction.getClass().getMethods();
-        Method applyMethod = null;
-
-
-        for (Method method : methods) {
-            if(! Modifier.isStatic(method.getModifiers()) && ! method.isDefault()) {
-                applyMethod = method;
-                break;
-            }
-        }
-
-        if(applyMethod == null) {
-            throw new IllegalAccessException(multipleArgumentsFunction.getClass().getName());
-        }
-
-        provider = DefinitionUtils.getProvideDefinition(applyMethod);
-        provider.setTarget(multipleArgumentsFunction);
-        provider.setId(multipleArgumentsFunction.getClass().getName());
-        repository.put(provider);
-        return provider;
-    }
 
     @Override
     public <T> T get(String id, Map<String, Object> invokeParams, Class<T> resultType)

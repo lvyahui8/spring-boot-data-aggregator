@@ -43,12 +43,5 @@ public interface DataBeanAggregateService {
     <T> T get(DataProvideDefinition provider, Map<String,Object> invokeParams, Class<T> resultType)
             throws InterruptedException, InvocationTargetException, IllegalAccessException;
 
-    /**
-     * 通过MultipleArgumentsFunction获取provider实例
-     *
-     * @param function 多参函数
-     * @return provider实例
-     * @throws IllegalAccessException ignored
-     */
-    DataProvideDefinition getProvider(MultipleArgumentsFunction<?> function) throws IllegalAccessException;
+
 }
