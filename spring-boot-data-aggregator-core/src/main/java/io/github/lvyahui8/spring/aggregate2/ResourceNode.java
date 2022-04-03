@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 public class ResourceNode {
     Object target;
     Method method;
+    String key;
 
     Map<String,Dependent> dependents;
 
@@ -27,6 +28,9 @@ public class ResourceNode {
     }
 
     public Object invoke(Context context) throws Exception {
+        if (context.getResultMap().containsKey(key)) {
+            return context.getResultMap().get(key);
+        }
         List<Object> args = new LinkedList<>();
         if (dependents != null) {
             List<CompletableFuture<Object>> asyncList = new LinkedList<>();
